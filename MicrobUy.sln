@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicrobUy_API", "MicrobUy_API\MicrobUy_API.csproj", "{F65E59E3-A795-4A62-8C70-22E1EFB46221}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F65E59E3-A795-4A62-8C70-22E1EFB46221}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F65E59E3-A795-4A62-8C70-22E1EFB46221}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F65E59E3-A795-4A62-8C70-22E1EFB46221}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F65E59E3-A795-4A62-8C70-22E1EFB46221}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BEFCF0C1-2EDF-49A8-8DE0-F0EA69A8B033}
+	EndGlobalSection
+EndGlobal
