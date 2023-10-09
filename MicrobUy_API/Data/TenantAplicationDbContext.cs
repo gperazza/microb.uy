@@ -1,20 +1,26 @@
 ﻿using MicrobUy_API.Models;
 using MicrobUy_API.Tenancy;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicrobUy_API.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class TenantAplicationDbContext : IdentityDbContext<UserModel>
     {
-        public int _tenant { get; }
+        public int? _tenant { get; }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ITenantInstance service)
+        public TenantAplicationDbContext(DbContextOptions<TenantAplicationDbContext> options, ITenantInstance service)
             : base(options) => _tenant = service.TenantInstanceId;
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.Entity<TenantInstanceModel>()
-        //.HasQueryFilter(mt => mt.TenantInstanceId == _tenant);
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<UserModel>().HasQueryFilter(mt => mt.TenantInstanceId == _tenant);
+        }
+       
 
         public DbSet<TenantInstanceModel> TenantInstances { get; set; }
+        public DbSet<UserModel> User { get; set; }
 
         //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         //{

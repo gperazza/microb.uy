@@ -10,7 +10,7 @@ namespace MicrobUy_API.TenantInstanceService
         /// </summary>
         /// <param name="request"></param>
         /// <returns>Devuelve la Instancia creada</returns>
-        Task<TenantInstanceModel> CreateInstance(CreateInstanceRequest request);
+        Task<TenantInstanceModel> CreateInstance(CreateInstanceRequestDto request);
 
         /// <summary>
         /// Obtiene todas las instancias existentes

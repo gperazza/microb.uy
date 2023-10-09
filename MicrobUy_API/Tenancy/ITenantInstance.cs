@@ -5,6 +5,8 @@ namespace MicrobUy_API.Tenancy
 {
     public interface ITenantInstance
     {
-        public int TenantInstanceId { get; set; }
+        Task<bool> SetTenant(int? tenant);
+
+        public int? TenantInstanceId { get; set; }
     }
 }

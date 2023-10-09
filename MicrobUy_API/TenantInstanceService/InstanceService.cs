@@ -6,9 +6,9 @@ namespace MicrobUy_API.TenantInstanceService
 {
     public class InstanceService : IInstanceService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly TenantAplicationDbContext _context;
 
-        public InstanceService(ApplicationDbContext context)
+        public InstanceService(TenantAplicationDbContext context)
         {
             _context = context;
         }
@@ -18,13 +18,13 @@ namespace MicrobUy_API.TenantInstanceService
         /// </summary>
         /// <param name="request"></param>
         /// <returns>Devuelve la Instancia creada</returns>
-        public async Task<TenantInstanceModel> CreateInstance(CreateInstanceRequest request)
+        public async Task<TenantInstanceModel> CreateInstance(CreateInstanceRequestDto request)
         {
             var newInstance = new TenantInstanceModel
             {
                 Nombre = request.Nombre,
                 Logo = request.Logo,
-                Url = request.Url,
+                Dominio = request.Dominio,
                 Tematica = request.Tematica,
                 Privacidad = request.Privacidad,
                 EsquemaColores = request.EsquemaColores,
