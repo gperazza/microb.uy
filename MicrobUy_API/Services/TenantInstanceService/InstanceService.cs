@@ -2,7 +2,7 @@
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Models;
 
-namespace MicrobUy_API.TenantInstanceService
+namespace MicrobUy_API.Services.TenantInstanceService
 {
     public class InstanceService : IInstanceService
     {

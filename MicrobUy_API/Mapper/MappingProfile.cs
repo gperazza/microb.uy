@@ -1,6 +1,7 @@
-﻿using MicrobUy_API.Dtos;
+﻿using AutoMapper;
+using MicrobUy_API.Dtos;
 using MicrobUy_API.Models;
-using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 
 namespace MicrobUy_API.Mapper
 {
@@ -8,9 +9,8 @@ namespace MicrobUy_API.Mapper
     {
         public AutoMapper()
         {
-    
-            CreateMap<UserRegistrationRequestDto, UserModel>()
-                .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
+            CreateMap<UserRegistrationRequestDto, IdentityUser>().ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
+            CreateMap<UserRegistrationRequestDto, UserModel>();
         }
     }
 }

@@ -1,42 +1,43 @@
 ﻿using MicrobUy_API.Models;
 using MicrobUy_API.Tenancy;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MicrobUy_API.Data
 {
-    public class TenantAplicationDbContext : IdentityDbContext<UserModel>
+    public class TenantAplicationDbContext : DbContext
     {
-        public int? _tenant { get; }
+        private readonly ITenantInstance _service;
+        public int _tenant { get; set; }
 
-        public TenantAplicationDbContext(DbContextOptions<TenantAplicationDbContext> options, ITenantInstance service)
-            : base(options) => _tenant = service.TenantInstanceId;
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public TenantAplicationDbContext(DbContextOptions<TenantAplicationDbContext> options, ITenantInstance service) : base(options)
         {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<UserModel>().HasQueryFilter(mt => mt.TenantInstanceId == _tenant);
+            _service = service;
+            _tenant = _service.TenantInstanceId;
         }
-       
 
         public DbSet<TenantInstanceModel> TenantInstances { get; set; }
         public DbSet<UserModel> User { get; set; }
 
-        //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
-        //{
-        //    foreach (var entry in ChangeTracker.Entries<TenantInstanceModel>().ToList()) // Write tenant Id to table
-        //    {
-        //        switch (entry.State)
-        //        {
-        //            case EntityState.Added:
-        //            case EntityState.Modified:
-        //                entry.Entity.TenantInstanceId = _tenant;
-        //                break;
-        //        }
-        //    }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserModel>().HasQueryFilter(mt => mt.TenantInstanceId == _tenant);
+        }
 
-        //    var result = await base.SaveChangesAsync(cancellationToken);
-        //    return result;
-        //}
+        public override int SaveChanges()
+        {
+            foreach (var entry in ChangeTracker.Entries<UserModel>().ToList()) // Write tenant Id to table
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                    case EntityState.Modified:
+                        entry.Entity.TenantInstanceId = _tenant;
+                        break;
+                }
+            }
+
+            var result = base.SaveChanges();
+            return result;
+        }
     }
 }

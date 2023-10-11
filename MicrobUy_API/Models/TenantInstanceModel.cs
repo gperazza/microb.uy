@@ -1,13 +1,10 @@
-﻿using FluentValidation;
-using MicrobUy_API.Dtos.Enums;
-using MicrobUy_API.Tenancy;
+﻿using MicrobUy_API.Dtos.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Reflection.Metadata;
 
 namespace MicrobUy_API.Models
 {
-    public class TenantInstanceModel 
+    public class TenantInstanceModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

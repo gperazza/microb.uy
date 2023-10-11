@@ -1,9 +1,8 @@
 using FluentValidation;
 using FluentValidation.Results;
 using MicrobUy_API.Dtos;
-using MicrobUy_API.TenantInstanceService;
+using MicrobUy_API.Services.TenantInstanceService;
 using Microsoft.AspNetCore.Mvc;
-using System;
 
 namespace MicrobUy_API.Controllers
 {
@@ -19,6 +18,7 @@ namespace MicrobUy_API.Controllers
             _validator = validator;
             _tenantInstanceService = tenantInstanceService;
         }
+
         /// <summary>
         /// Obtienen todoas las instancias existentes
         /// </summary>
@@ -46,7 +46,7 @@ namespace MicrobUy_API.Controllers
                 return Ok(result);
             }
 
-            return BadRequest(res.Errors); 
+            return BadRequest(res.Errors);
         }
     }
 }

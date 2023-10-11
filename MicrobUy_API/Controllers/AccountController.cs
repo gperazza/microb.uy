@@ -2,7 +2,7 @@
 using MicrobUy_API.Dtos;
 using MicrobUy_API.JwtFeatures;
 using MicrobUy_API.Models;
-using Microsoft.AspNetCore.Http;
+using MicrobUy_API.Services.AccountService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,34 +13,56 @@ namespace MicrobUy_API.Controllers
     [Route("[controller]")]
     public class AccountController : ControllerBase
     {
-
-        private readonly UserManager<UserModel> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IMapper _mapper;
         private readonly JwtHandler _jwtHandler;
+        private readonly IAccountService _accountService;
 
-        public AccountController(UserManager<UserModel> userManager, IMapper mapper, JwtHandler jwtHandler)
+        public AccountController(UserManager<IdentityUser> userManager, IMapper mapper, JwtHandler jwtHandler, IAccountService accountService)
         {
             _userManager = userManager;
             _mapper = mapper;
             _jwtHandler = jwtHandler;
+            _accountService = accountService;
         }
 
         [HttpPost("Registration")]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationRequestDto userRegistration)
         {
+            IEnumerable<string> errors;
+            List<string> listOfErrors = new List<string>();
+
             if (userRegistration == null || !ModelState.IsValid)
                 return BadRequest();
 
-            UserModel user = _mapper.Map<UserModel>(userRegistration);
-            var result = await _userManager.CreateAsync(user, userRegistration.Password);
-            if (!result.Succeeded)
+            IdentityUser user = _mapper.Map<IdentityUser>(userRegistration);
+
+            var userExist = await _userManager.FindByNameAsync(user.Email);
+
+            if (userExist == null)
             {
-                var errors = result.Errors.Select(e => e.Description);
+                var result = await _userManager.CreateAsync(user, userRegistration.Password);
+                if (!result.Succeeded)
+                {
+                    errors = result.Errors.Select(e => e.Description);
 
-                return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+                    return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+                }
+
+                UserModel bdUser = await _accountService.UserRegistration(userRegistration);
+                if (bdUser == null)
+                {
+                    listOfErrors.Add("Error no fue posible registrar el usuario");
+                    errors = listOfErrors.Select(x => x);
+
+                    return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+                }
+
+                return StatusCode(201);
             }
-
-            return StatusCode(201);
+            listOfErrors.Add("El usuario ya existe");
+            errors = listOfErrors.Select(x => x);
+            return BadRequest(new UserRegistrationResponseDto { Errors = errors });
         }
 
         [HttpPost("Login")]
