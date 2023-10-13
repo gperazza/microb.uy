@@ -5,6 +5,8 @@ using MicrobUy_API.Models;
 using MicrobUy_API.Services.AccountService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace MicrobUy_API.Controllers
@@ -58,9 +60,18 @@ namespace MicrobUy_API.Controllers
                     return BadRequest(new UserRegistrationResponseDto { Errors = errors });
                 }
 
+                var roleResult = await _userManager.AddToRoleAsync(user, userRegistration.Role);
+                
+                if (!roleResult.Succeeded)
+                {
+                    errors = roleResult.Errors.Select(e => e.Description);
+
+                    return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+                }
+                
                 return StatusCode(201);
             }
-            listOfErrors.Add("El usuario ya existe");
+            listOfErrors.Add("El email ya está siendo utilizado");
             errors = listOfErrors.Select(x => x);
             return BadRequest(new UserRegistrationResponseDto { Errors = errors });
         }
@@ -72,7 +83,7 @@ namespace MicrobUy_API.Controllers
             if (user == null || !await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
                 return Unauthorized(new UserAuthenticationResponseDto { ErrorMessage = "Invalid Authentication" });
             var signingCredentials = _jwtHandler.GetSigningCredentials();
-            var claims = _jwtHandler.GetClaims(user);
+            var claims = await _jwtHandler.GetClaims(user);
             var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return Ok(new UserAuthenticationResponseDto { IsAuthSuccessful = true, Token = token });
