@@ -6,5 +6,7 @@ namespace MicrobUy_API.Services.AccountService
     public interface IAccountService
     {
         Task<UserModel> UserRegistration(UserRegistrationRequestDto request);
+
+        Task<IEnumerable<UserModel>> GetUsuarioByTenant(int tenant);
     }
 }

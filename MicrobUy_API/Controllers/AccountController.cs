@@ -88,5 +88,12 @@ namespace MicrobUy_API.Controllers
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return Ok(new UserAuthenticationResponseDto { IsAuthSuccessful = true, Token = token });
         }
+
+        [HttpGet("obtenerUsuarios")]
+        public async Task<IActionResult> obtenerUsuarios([FromHeader]int tenant)
+        {
+            IEnumerable<UserModel> usuarios = await _accountService.GetUsuarioByTenant(tenant);
+            return Ok(usuarios);
+        }
     }
 }
