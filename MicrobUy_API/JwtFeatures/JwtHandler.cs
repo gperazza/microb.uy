@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MicrobUy_API.Data;
+using MicrobUy_API.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -10,14 +13,16 @@ namespace MicrobUy_API.JwtFeatures
     {
         private readonly IConfiguration _configuration;
         private readonly IConfigurationSection _jwtSettings;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly TenantAplicationDbContext _context;
 
 
-        public JwtHandler(IConfiguration configuration, UserManager<IdentityUser> userManager)
+        public JwtHandler(IConfiguration configuration, UserManager<ApplicationUser> userManager, TenantAplicationDbContext context)
         {
             _configuration = configuration;
             _jwtSettings = _configuration.GetSection("JwtSettings");
             _userManager = userManager;
+            _context = context;
         }
 
         public SigningCredentials GetSigningCredentials()
@@ -27,12 +32,15 @@ namespace MicrobUy_API.JwtFeatures
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
-        public async Task<List<Claim>> GetClaims(IdentityUser user)
+        public async Task<List<Claim>> GetClaims(ApplicationUser user)
         {
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Email)
             };
+
+            claims.Add(new Claim("TenantInstanceId", _context.User.Where(x => x.Email == user.Email).FirstOrDefault().TenantInstanceId.ToString()));
+
             var roles = await _userManager.GetRolesAsync(user);
 
             foreach (var role in roles)

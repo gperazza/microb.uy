@@ -3,6 +3,7 @@ using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.JwtFeatures;
 using MicrobUy_API.Middleware;
+using MicrobUy_API.Models;
 using MicrobUy_API.Services.AccountService;
 using MicrobUy_API.Services.TenantInstanceService;
 using MicrobUy_API.Tenancy;
@@ -43,7 +44,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddDbContext<TenantAplicationDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
 builder.Services.AddDbContext<TenantInstanceDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
 builder.Services.AddDbContext<IdentityProviderDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opt => { opt.User.RequireUniqueEmail = false; }) 
     .AddEntityFrameworkStores<IdentityProviderDbContext>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<IInstanceService, InstanceService>();
@@ -52,6 +53,10 @@ builder.Services.AddScoped<IValidator<CreateInstanceRequestDto>, CreateInstanceR
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateInstanceRequestValidator>();
 builder.Services.AddScoped<JwtHandler>();
+builder.Services.AddControllersWithViews()
+    .AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
 
 //CORS
 var misReglasCors = "ReglasCors";
