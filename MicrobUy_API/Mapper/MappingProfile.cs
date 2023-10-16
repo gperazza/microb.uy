@@ -9,8 +9,10 @@ namespace MicrobUy_API.Mapper
     {
         public AutoMapper()
         {
-            CreateMap<UserRegistrationRequestDto, IdentityUser>().ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
+            CreateMap<UserRegistrationRequestDto, ApplicationUser>().ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
+            CreateMap<UserAuthenticationRequestDto, ApplicationUser>().ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
             CreateMap<UserRegistrationRequestDto, UserModel>();
+            CreateMap<CreateInstanceRequestDto, TenantInstanceModel>();
         }
     }
 }

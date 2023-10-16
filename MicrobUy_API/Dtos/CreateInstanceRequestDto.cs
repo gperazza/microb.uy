@@ -10,6 +10,7 @@ namespace MicrobUy_API.Dtos
         public string Logo { get; set; }
         public bool Activo { get; set; }
         public string Tematica { get; set; }
+        public string Description { get; set; }
         public EsquemaColoresEnum EsquemaColores { get; set; }
         public PrivacidadEnum Privacidad { get; set; }
     }

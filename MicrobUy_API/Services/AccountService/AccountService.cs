@@ -2,8 +2,7 @@
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+
 
 namespace MicrobUy_API.Services.AccountService
 {
@@ -28,15 +27,14 @@ namespace MicrobUy_API.Services.AccountService
             return newUser;
         }
 
-        public async Task<IEnumerable<UserModel>> GetUsuarioByTenant(int tenant)
+        public async Task<IEnumerable<UserModel>> GetUsuarioByInstance()
         {
-            IEnumerable<UserModel> usuarios = null;
-            TenantInstanceModel tenantInstance = _context.TenantInstances.Where(x=>x.TenantInstanceId==tenant && x.Activo!=false).FirstOrDefault();
-            if (tenant != 0 || tenantInstance != null ) {
-                usuarios = _context.User.ToList().Where(x => x.TenantInstanceId == tenant);
-            }
-            return usuarios;
+            return _context.User.ToList();
         }
 
+        public async Task<UserModel> GetUser(string userEmail)
+        {
+            return _context.User.Where(x => x.Email == userEmail).FirstOrDefault();
+        }
     }
 }
