@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.Extensions.Hosting;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MicrobUy_API.Models
@@ -15,6 +16,11 @@ namespace MicrobUy_API.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public string ProfileImage { get; set; }
+        //One to many del usuario que postea
+        public ICollection<PostModel> Posts { get; } = new List<PostModel>();
+
+        //Post a los que le dio like
+        public ICollection<PostModel> Likes { get; set; } = new List<PostModel>();
         public ICollection<TenantInstanceModel> AdministratedInstances { get; set; }
     }
 }

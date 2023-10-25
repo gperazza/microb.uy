@@ -8,6 +8,7 @@ namespace MicrobUy_API.Data
     {
         private readonly ITenantInstance _service;
         public int _tenant { get; set; }
+        public int _user { get; set; }
 
         public TenantAplicationDbContext(DbContextOptions<TenantAplicationDbContext> options, ITenantInstance service) : base(options)
         {
@@ -17,10 +18,12 @@ namespace MicrobUy_API.Data
 
         public DbSet<TenantInstanceModel> TenantInstances { get; set; }
         public DbSet<UserModel> User { get; set; }
+        public DbSet<PostModel> Post { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserModel>().HasQueryFilter(mt => mt.TenantInstanceId == _tenant);
+            modelBuilder.Entity<PostModel>().HasQueryFilter(mt => mt.TenantInstanceId == _tenant);
         }
 
         public override int SaveChanges()
@@ -38,6 +41,11 @@ namespace MicrobUy_API.Data
 
             var result = base.SaveChanges();
             return result;
+        }
+
+        internal Task AddAsync(object v)
+        {
+            throw new NotImplementedException();
         }
     }
 }

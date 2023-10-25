@@ -5,6 +5,7 @@ using MicrobUy_API.JwtFeatures;
 using MicrobUy_API.Middleware;
 using MicrobUy_API.Models;
 using MicrobUy_API.Services.AccountService;
+using MicrobUy_API.Services.PostService;
 using MicrobUy_API.Services.TenantInstanceService;
 using MicrobUy_API.Tenancy;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,6 +50,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opt => { opt.User.Re
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<IInstanceService, InstanceService>();
 builder.Services.AddScoped<ITenantInstance, TenantInstance>();
+builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IValidator<CreateInstanceRequestDto>, CreateInstanceRequestValidator>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateInstanceRequestValidator>();
