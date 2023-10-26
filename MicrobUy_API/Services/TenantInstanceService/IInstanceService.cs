@@ -31,6 +31,6 @@ namespace MicrobUy_API.Services.TenantInstanceService
         /// </summary>
         /// <param name="instance">Datos de la instancia modificada</param>
         /// <returns>Devuelve la instancia modificada</returns>
-        Task<TenantInstanceModel> ModifyInstance(TenantInstanceModel instance);
+        Task<int> ModifyInstance(ModifyInstanceRequest instance);
     }
 }

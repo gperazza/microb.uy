@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Models;
+using System.Reflection.Metadata.Ecma335;
 
 namespace MicrobUy_API.Services.TenantInstanceService
 {
@@ -63,14 +65,14 @@ namespace MicrobUy_API.Services.TenantInstanceService
         /// </summary>
         /// <param name="instance">Datos de la instancia modificada</param>
         /// <returns>Devuelve la instancia modificada</returns>
-        public async Task<TenantInstanceModel> ModifyInstance( TenantInstanceModel instance)
+        public async Task<int> ModifyInstance(ModifyInstanceRequest instance)
         {
-            var instanceExist = _context.TenantInstances.FirstOrDefault(x => x.TenantInstanceId == instance.TenantInstanceId && x.Activo);
-            
-            if (instanceExist == null)
-                return null;
+            TenantInstanceModel newInstance = _mapper.Map<TenantInstanceModel>(instance);
+            newInstance.TenantInstanceId = _context._tenant;
 
-           return _context.Update(instance).Entity;
+           _context.Update(newInstance);
+           return _context.SaveChanges();
+
 
         }
     }

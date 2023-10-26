@@ -33,9 +33,9 @@ namespace MicrobUy_API.Controllers
         {
             IEnumerable<string> errors;
             List<string> listOfErrors = new List<string>();
-            FluentValidation.Results.ValidationResult res = await _validator.ValidateAsync(post);
+           //FluentValidation.Results.ValidationResult res = await _validator.ValidateAsync(post);
             
-            if(res.IsValid) {
+            //if(res.IsValid) {
                 var result = await _postService.CreatePost(post, userEmail);
                 if (result == null)
                 {
@@ -44,8 +44,8 @@ namespace MicrobUy_API.Controllers
                     return BadRequest(new UserPostResponseDto { Errors = errors });
                 }
                 return Ok(result);
-            }
-            return BadRequest(res.Errors);
+            //}
+            //return BadRequest(res.Errors);
         }
 
         [HttpPost("CreateComment")]

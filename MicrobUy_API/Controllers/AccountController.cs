@@ -3,6 +3,7 @@ using MicrobUy_API.Dtos;
 using MicrobUy_API.JwtFeatures;
 using MicrobUy_API.Models;
 using MicrobUy_API.Services.AccountService;
+using MicrobUy_API.Services.TenantInstanceService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
@@ -14,41 +15,53 @@ namespace MicrobUy_API.Controllers
     [Route("[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IMapper _mapper;
         private readonly JwtHandler _jwtHandler;
         private readonly IAccountService _accountService;
+        private readonly IInstanceService _tenantInstanceService;
 
-        public AccountController(UserManager<ApplicationUser> userManager, IMapper mapper, JwtHandler jwtHandler, IAccountService accountService)
+        public AccountController(UserManager<IdentityUser> userManager, IMapper mapper, JwtHandler jwtHandler, IAccountService accountService, IInstanceService tenantInstanceService)
         {
             _userManager = userManager;
             _mapper = mapper;
             _jwtHandler = jwtHandler;
             _accountService = accountService;
+            _tenantInstanceService = tenantInstanceService;
         }
 
         [HttpPost("Registration")]
-        public async Task<IActionResult> RegisterUser([FromHeader][Required] int tenant, [FromBody] UserRegistrationRequestDto userRegistration)
+        public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationRequestDto userRegistration)
         {
-             ApplicationUser userExist = null;
+           
             IEnumerable<string> errors;
             List<string> listOfErrors = new List<string>();
 
             if (userRegistration == null || !ModelState.IsValid)
                 return BadRequest();
 
-            ApplicationUser user = _mapper.Map<ApplicationUser>(userRegistration);
-            user.TenantInstanceId = tenant;
+            int tenantInstance = Convert.ToInt32(HttpContext.Request.Headers["tenant"]);
 
-            if (tenant == 0)
-                userExist = await _userManager.FindByNameAsync(user.Email);
 
-            if (userExist != null)
+            IdentityUser user = _mapper.Map<IdentityUser>(userRegistration);
+
+            if (tenantInstance != 0)
             {
-                listOfErrors.Add("El email ya está siendo utilizado");
-                errors = listOfErrors.Select(x => x);
-                return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+                TenantInstanceModel instance = await _tenantInstanceService.GetInstance(Convert.ToInt32(HttpContext.Request.Headers["tenant"]));
+
+                if(instance == null) 
+                {
+                    listOfErrors.Add("La instancia no existe");
+                    errors = listOfErrors.Select(x => x);
+
+                    return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+                }
+
+                user.UserName = user.UserName + "@" + instance.Dominio;
             }
+            
+            if(tenantInstance == 0)
+                user.UserName = user.UserName + "@" + "microbuy";
 
             var result = await _userManager.CreateAsync(user, userRegistration.Password);
 
@@ -86,7 +99,7 @@ namespace MicrobUy_API.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserAuthenticationRequestDto userForAuthentication)
         {
-            ApplicationUser userExist = await _userManager.FindByNameAsync(userForAuthentication.Email);
+            IdentityUser userExist = await _userManager.FindByNameAsync(userForAuthentication.Username);
             if (userExist == null || !await _userManager.CheckPasswordAsync(userExist, userForAuthentication.Password))
                 return Unauthorized(new UserAuthenticationResponseDto { ErrorMessage = "Invalid Authentication" });
             var signingCredentials = _jwtHandler.GetSigningCredentials();

@@ -1,6 +1,8 @@
 ﻿using MicrobUy_API.Models;
 using MicrobUy_API.Tenancy;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Hosting;
 
 namespace MicrobUy_API.Data
 {
@@ -8,7 +10,6 @@ namespace MicrobUy_API.Data
     {
         private readonly ITenantInstance _service;
         public int _tenant { get; set; }
-        public int _user { get; set; }
 
         public TenantAplicationDbContext(DbContextOptions<TenantAplicationDbContext> options, ITenantInstance service) : base(options)
         {
@@ -22,19 +23,33 @@ namespace MicrobUy_API.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<UserModel>().HasMany(e => e.Likes).WithMany(e => e.Likes).UsingEntity("PostLikes");
+            modelBuilder.Entity<UserModel>().HasMany(e => e.AdministratedInstances).WithMany(e => e.InstanceAdministrators).UsingEntity("InstanceAdministrators");
+            modelBuilder.Entity<UserModel>().HasMany(e => e.Posts).WithOne(e => e.UserOwner);
+            modelBuilder.Entity<PostModel>().OwnsOne(x => x.Hashtag);
             modelBuilder.Entity<UserModel>().HasQueryFilter(mt => mt.TenantInstanceId == _tenant);
             modelBuilder.Entity<PostModel>().HasQueryFilter(mt => mt.TenantInstanceId == _tenant);
         }
 
         public override int SaveChanges()
         {
-            foreach (var entry in ChangeTracker.Entries<UserModel>().ToList()) // Write tenant Id to table
+          
+            foreach (var entry in ChangeTracker.Entries().ToList()) // Write tenant Id to table
             {
+                
                 switch (entry.State)
                 {
                     case EntityState.Added:
                     case EntityState.Modified:
-                        entry.Entity.TenantInstanceId = _tenant;
+                        if (entry.Entity.GetType() == typeof(UserModel)) {
+                            UserModel newEntery = (UserModel)entry.Entity;
+                            newEntery.TenantInstanceId = _tenant;
+                        }
+                        if (entry.Entity.GetType() == typeof(PostModel))
+                        {
+                            PostModel newEntery = (PostModel)entry.Entity;
+                            newEntery.TenantInstanceId = _tenant;
+                        }
                         break;
                 }
             }
@@ -43,9 +58,5 @@ namespace MicrobUy_API.Data
             return result;
         }
 
-        internal Task AddAsync(object v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
