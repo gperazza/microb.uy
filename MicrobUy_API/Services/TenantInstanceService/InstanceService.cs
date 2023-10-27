@@ -26,7 +26,7 @@ namespace MicrobUy_API.Services.TenantInstanceService
         public async Task<TenantInstanceModel> CreateInstance(CreateInstanceRequestDto request, string userName)
         {
             TenantInstanceModel newInstance = _mapper.Map<TenantInstanceModel>(request);
-            UserModel userExist = _context.User.Where(x=>x.Email == userName).FirstOrDefault();
+            UserModel userExist = _context.User.Where(x=>x.UserName == userName).FirstOrDefault();
 
             if (userExist == null)
                 return null;
