@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Neo4j.Driver;
 using System.Text;
 using System;
 
@@ -60,36 +59,6 @@ builder.Services.AddControllersWithViews()
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
 
-//Node4j
-
-builder.Services.AddSingleton(GraphDatabase.Driver(
-           Environment.GetEnvironmentVariable("NEO4J_URI") ?? "neo4j+s://demo.neo4jlabs.com",
-           AuthTokens.Basic(
-               Environment.GetEnvironmentVariable("NEO4J_USER") ?? "movies",
-               Environment.GetEnvironmentVariable("NEO4J_PASSWORD") ?? "movies"
-           )
-       ));
-/*
-IDriver client = GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("micro", "forcepassword"));
-var status1 = client.VerifyConnectivityAsync();  
-using var session = client.AsyncSession();
-var message = "hello, world";
-var greeting = session.ExecuteWriteAsync(
-    tx =>
-    {
-        var result = tx.RunAsync(
-            "MATCH (n) RETURN count(n) ");
-
-        return result;
-    });
-bool status = greeting.IsCompletedSuccessfully;
-
-Console.WriteLine(greeting);
-//var client = new BoltGraphClient(new Uri("http://localhost:7687"),null, "neo4j", "root",null,null);
-//client.ConnectAsync();
-//builder.Services.AddSingleton<IGraphClient>(client);
-//builder.Services.AddDbContext<Neo4jDbContext>();
-*/
 //CORS
 var misReglasCors = "ReglasCors";
 builder.Services.AddCors(opt =>
