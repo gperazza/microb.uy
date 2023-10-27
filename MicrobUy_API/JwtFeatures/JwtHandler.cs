@@ -13,11 +13,11 @@ namespace MicrobUy_API.JwtFeatures
     {
         private readonly IConfiguration _configuration;
         private readonly IConfigurationSection _jwtSettings;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly TenantAplicationDbContext _context;
 
 
-        public JwtHandler(IConfiguration configuration, UserManager<ApplicationUser> userManager, TenantAplicationDbContext context)
+        public JwtHandler(IConfiguration configuration, UserManager<IdentityUser> userManager, TenantAplicationDbContext context)
         {
             _configuration = configuration;
             _jwtSettings = _configuration.GetSection("JwtSettings");
@@ -32,14 +32,12 @@ namespace MicrobUy_API.JwtFeatures
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
-        public async Task<List<Claim>> GetClaims(ApplicationUser user)
+        public async Task<List<Claim>> GetClaims(IdentityUser user)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Email)
+                new Claim(ClaimTypes.Name, user.UserName)
             };
-
-            claims.Add(new Claim("TenantInstanceId", _context.User.Where(x => x.Email == user.Email).FirstOrDefault().TenantInstanceId.ToString()));
 
             var roles = await _userManager.GetRolesAsync(user);
 

@@ -20,6 +20,7 @@ namespace MicrobUy_API.Services.AccountService
         public async Task<UserModel> UserRegistration(UserRegistrationRequestDto request)
         {
             UserModel newUser = _mapper.Map<UserModel>(request);
+            newUser.CreationDate = DateTime.Now;    
 
             await _context.AddAsync(newUser);
             _context.SaveChanges();

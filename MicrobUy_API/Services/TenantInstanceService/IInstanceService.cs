@@ -11,7 +11,7 @@ namespace MicrobUy_API.Services.TenantInstanceService
         /// <param name="request">Instance data</param>
         /// <param name="userEmail">Admin user of Instance</param>
         /// <returns>Devuelve la Instancia creada</returns>
-        Task<TenantInstanceModel> CreateInstance(CreateInstanceRequestDto request, string userEmail);
+        Task<TenantInstanceModel> CreateInstance(CreateInstanceRequestDto request, string userName);
 
         /// <summary>
         /// Obtiene todas las instancias existentes
@@ -31,6 +31,6 @@ namespace MicrobUy_API.Services.TenantInstanceService
         /// </summary>
         /// <param name="instance">Datos de la instancia modificada</param>
         /// <returns>Devuelve la instancia modificada</returns>
-        Task<TenantInstanceModel> ModifyInstance(TenantInstanceModel instance);
+        Task<int> ModifyInstance(ModifyInstanceRequest instance);
     }
 }

@@ -1,7 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
 using MicrobUy_API.Dtos;
-using MicrobUy_API.Models;
 using MicrobUy_API.Services.TenantInstanceService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,7 +36,7 @@ namespace MicrobUy_API.Controllers
         /// <param name="request"></param>
         /// <returns>Retorna la Instancia creada</returns>
         [HttpPost("CreateInstance")]
-        public async Task<IActionResult> PostAsync(CreateInstanceRequestDto request, string userEmail)
+        public async Task<IActionResult> PostAsync(CreateInstanceRequestDto request, string userName)
         {
             IEnumerable<string> errors;
             List<string> listOfErrors = new List<string>();
@@ -45,7 +44,7 @@ namespace MicrobUy_API.Controllers
 
             if (res.IsValid)
             {
-                var result = await _tenantInstanceService.CreateInstance(request, userEmail);
+                var result = await _tenantInstanceService.CreateInstance(request, userName);
                 if (result == null)
                 {
 
@@ -77,8 +76,8 @@ namespace MicrobUy_API.Controllers
         /// </summary>
         /// <param name="instance"></param>
         /// <returns>Retorna la Instancia creada</returns>
-        [HttpPost("ModifyInstance")]
-        public async Task<IActionResult> ModifyInstance([FromBody]TenantInstanceModel instance)
+        [HttpPut("ModifyInstance")]
+        public async Task<IActionResult> ModifyInstance([FromBody] ModifyInstanceRequest instance)
         {
             IEnumerable<string> errors;
             List<string> listOfErrors = new List<string>();
