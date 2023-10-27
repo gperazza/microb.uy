@@ -125,9 +125,9 @@ namespace MicrobUy_API.Controllers
         }
 
         [HttpGet("GetUser")]
-        public async Task<IActionResult> GetUser([Required] string userEmail)
+        public async Task<IActionResult> GetUser([Required] string userName)
         {
-            UserModel user = await _accountService.GetUser(userEmail);
+            UserModel user = await _accountService.GetUser(userName);
             return Ok(user);
         }
     }

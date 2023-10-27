@@ -33,9 +33,9 @@ namespace MicrobUy_API.Services.AccountService
             return _context.User.ToList();
         }
 
-        public async Task<UserModel> GetUser(string userEmail)
+        public async Task<UserModel> GetUser(string userName)
         {
-            return _context.User.Where(x => x.Email == userEmail).FirstOrDefault();
+            return _context.User.Where(x => x.Email == userName).FirstOrDefault();
         }
     }
 }
