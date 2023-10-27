@@ -33,12 +33,12 @@ namespace MicrobUy_API.Services.PostService
             return newPost;
         }
 
-        public Task<PostModel> CreatePostComment(PostModel post, CreatePostDto postComment, string userEmail)
+        public Task<PostModel> CreatePostComment(PostModel post, CreatePostDto postComment, string userName)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PostModel> CreatePostComment(int postId, CreatePostDto postComment, string userEmail)
+        public Task<PostModel> CreatePostComment(int postId, CreatePostDto postComment, string userName)
         {
             throw new NotImplementedException();
         }

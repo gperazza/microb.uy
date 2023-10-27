@@ -6,7 +6,7 @@ namespace MicrobUy_API.Services.PostService
 {
     public interface IPostService
     {
-       Task<PostModel> CreatePost(CreatePostDto post, string userEmail);
-       Task<PostModel> CreatePostComment(int postId, CreatePostDto postComment, string userEmail);
+       Task<PostModel> CreatePost(CreatePostDto post, string userName);
+       Task<PostModel> CreatePostComment(int postId, CreatePostDto postComment, string userName);
     }
 }

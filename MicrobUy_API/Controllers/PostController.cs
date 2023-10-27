@@ -27,14 +27,14 @@ namespace MicrobUy_API.Controllers
         }
 
         [HttpPost("CreatePost")]
-        public async Task<IActionResult> CreatePostAsync([FromBody] CreatePostDto post, string userEmail)
+        public async Task<IActionResult> CreatePostAsync([FromBody] CreatePostDto post, string userName)
         {
             IEnumerable<string> errors;
             List<string> listOfErrors = new List<string>();
            //FluentValidation.Results.ValidationResult res = await _validator.ValidateAsync(post);
             
             //if(res.IsValid) {
-                var result = await _postService.CreatePost(post, userEmail);
+                var result = await _postService.CreatePost(post, userName);
                 if (result == null)
                 {
                     listOfErrors.Add("Error al crear el post");
@@ -47,7 +47,7 @@ namespace MicrobUy_API.Controllers
         }
 
         [HttpPost("CreateComment")]
-        public async Task<IActionResult> CommentAsync(int postId, [FromBody] CreatePostDto postComment, string userEmail)
+        public async Task<IActionResult> CommentAsync(int postId, [FromBody] CreatePostDto postComment, string userName)
         {
             IEnumerable<string> errors;
             List<string> listOfErrors = new List<string>();
@@ -55,7 +55,7 @@ namespace MicrobUy_API.Controllers
 
             if (res.IsValid)
             {
-                var result = await _postService.CreatePostComment(postId, postComment, userEmail);
+                var result = await _postService.CreatePostComment(postId, postComment, userName);
                 if (result == null)
                 {
                     listOfErrors.Add("Error al crear el comentario");
