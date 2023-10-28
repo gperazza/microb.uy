@@ -130,5 +130,6 @@ namespace MicrobUy_API.Controllers
             UserModel user = await _accountService.GetUser(userName);
             return Ok(user);
         }
+
     }
 }

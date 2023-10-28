@@ -10,6 +10,7 @@ using MicrobUy_API.Services.PostService;
 using MicrobUy_API.Services.TenantInstanceService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using System.ComponentModel.DataAnnotations;
 
 namespace MicrobUy_API.Controllers
@@ -65,6 +66,13 @@ namespace MicrobUy_API.Controllers
                 return Ok(result);
             }
             return BadRequest(res.Errors);
+        }
+
+        [HttpGet("GetPostByUser")]
+        public async Task<IActionResult> GetPostByUser(String userName)
+        {
+            var result = await _postService.GetPostByUser(userName);
+            return Ok(result);
         }
 
 

@@ -8,5 +8,6 @@ namespace MicrobUy_API.Services.PostService
     {
        Task<PostModel> CreatePost(CreatePostDto post, string userName);
        Task<PostModel> CreatePostComment(int postId, CreatePostDto postComment, string userName);
+       Task<IEnumerable<PostModel>> GetPostByUser(string userName);
     }
 }

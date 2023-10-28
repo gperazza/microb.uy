@@ -3,6 +3,7 @@ using Azure.Core;
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Models;
+using System.Threading.Tasks;
 
 namespace MicrobUy_API.Services.PostService
 {
@@ -42,5 +43,13 @@ namespace MicrobUy_API.Services.PostService
         {
             throw new NotImplementedException();
         }
+
+        public async Task <IEnumerable<PostModel>> GetPostByUser(string userName)
+        {
+            var post = _context.Post.Where(x => x.UserOwner.UserName == userName).ToList();
+            return post;
+        }
+
+        
     }
 }
