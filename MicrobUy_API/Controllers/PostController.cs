@@ -52,20 +52,16 @@ namespace MicrobUy_API.Controllers
         {
             IEnumerable<string> errors;
             List<string> listOfErrors = new List<string>();
-            FluentValidation.Results.ValidationResult res = await _validator.ValidateAsync(postComment);
 
-            if (res.IsValid)
+            var result = await _postService.CreatePostComment(postId, postComment, userName);
+            if (result == null)
             {
-                var result = await _postService.CreatePostComment(postId, postComment, userName);
-                if (result == null)
-                {
-                    listOfErrors.Add("Error al crear el comentario");
-                    errors = listOfErrors.Select(x => x);
-                    return BadRequest(new UserPostResponseDto { Errors = errors });
-                }
-                return Ok(result);
+                listOfErrors.Add("Error al crear el comentario");
+                errors = listOfErrors.Select(x => x);
+                return BadRequest(new UserPostResponseDto { Errors = errors });
             }
-            return BadRequest(res.Errors);
+            return Ok(result);
+        
         }
 
         [HttpGet("GetPostByUser")]

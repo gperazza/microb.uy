@@ -28,26 +28,35 @@ namespace MicrobUy_API.Services.PostService
 
             newPost.UserOwner = userExist;
             newPost.Created =  DateTime.Now;
-
+            newPost.isComment = false;
             await _context.AddAsync(newPost);
             _context.SaveChanges();
 
             return newPost;
         }
 
-        public Task<PostModel> CreatePostComment(PostModel post, CreatePostDto postComment, string userName)
+        public async Task<PostModel> CreatePostComment(int postId, CreatePostDto postComment, string userName)
         {
-            throw new NotImplementedException();
-        }
+            PostModel newPost = _mapper.Map<PostModel>(postComment);
+            PostModel aux_post = _context.Post.Where(x => x.PostId == postId).FirstOrDefault();
+            UserModel userExist = _context.User.Where(x => x.UserName == userName).FirstOrDefault();
 
-        public Task<PostModel> CreatePostComment(int postId, CreatePostDto postComment, string userName)
-        {
-            throw new NotImplementedException();
+            if (userExist == null) return null;
+            if (aux_post == null) return null;
+
+            newPost.UserOwner = userExist;
+            newPost.Created = DateTime.Now;
+            newPost.isComment = true;
+
+            aux_post.Comments.Add(newPost);
+            _context.SaveChanges();
+
+            return newPost;
         }
 
         public async Task <IEnumerable<PostModel>> GetPostByUser(string userName)
         {
-            var post = _context.Post.Where(x => x.UserOwner.UserName == userName).Include(x => x.UserOwner)
+            var post = _context.Post.Where(x => x.UserOwner.UserName == userName && x.isComment == false).Include(x => x.Comments).Include(x => x.UserOwner)
                 .Include(x => x.Likes).ToList();
             return post;
         }
