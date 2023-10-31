@@ -2,7 +2,7 @@
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Models;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace MicrobUy_API.Services.AccountService
 {
@@ -35,7 +35,11 @@ namespace MicrobUy_API.Services.AccountService
 
         public async Task<UserModel> GetUser(string userName)
         {
-            return _context.User.Where(x => x.UserName == userName).FirstOrDefault();
+            return _context.User
+                .Include(x => x.AdministratedInstances)
+                .Include(x => x.Posts)
+                .Include(x => x.Likes)
+              .FirstOrDefault(x => x.UserName == userName);
         }
     }
 }

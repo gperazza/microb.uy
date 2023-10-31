@@ -3,6 +3,7 @@ using Azure.Core;
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace MicrobUy_API.Services.PostService
@@ -46,7 +47,8 @@ namespace MicrobUy_API.Services.PostService
 
         public async Task <IEnumerable<PostModel>> GetPostByUser(string userName)
         {
-            var post = _context.Post.Where(x => x.UserOwner.UserName == userName).ToList();
+            var post = _context.Post.Where(x => x.UserOwner.UserName == userName).Include(x => x.UserOwner)
+                .Include(x => x.Likes).ToList();
             return post;
         }
 

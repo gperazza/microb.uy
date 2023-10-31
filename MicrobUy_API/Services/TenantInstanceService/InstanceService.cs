@@ -3,6 +3,7 @@ using Azure.Core;
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 
 namespace MicrobUy_API.Services.TenantInstanceService
@@ -46,7 +47,7 @@ namespace MicrobUy_API.Services.TenantInstanceService
         /// <returns>Devuelve todas las instancias existentes</returns>
         public async Task<IEnumerable<TenantInstanceModel>> GetAllActiveInstances()
         {
-            var instances = _context.TenantInstances.Where(x => x.Activo).ToList();
+            var instances = _context.TenantInstances.Include(x => x.InstanceAdministrators).Where(x => x.Activo).ToList();
             return instances;
         }
 
@@ -57,7 +58,7 @@ namespace MicrobUy_API.Services.TenantInstanceService
         /// <returns>Si la instancia con el id existe la devuelve</returns>
         public async Task<TenantInstanceModel> GetInstance(int instanceId) 
         {
-            var instance = _context.TenantInstances.FirstOrDefault(x => x.TenantInstanceId == instanceId && x.Activo); 
+            var instance = _context.TenantInstances.Include(x => x.InstanceAdministrators).FirstOrDefault(x => x.TenantInstanceId == instanceId && x.Activo); 
             return instance;
         }
 
