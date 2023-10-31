@@ -93,5 +93,11 @@ namespace MicrobUy_API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetInstanceByDomain")]
+        public async Task<IActionResult> GetInstanceByDomain(string domain)
+        {
+            var instance = await _tenantInstanceService.GetInstanceByDomain(domain);
+            return Ok(instance);
+        }
     }
 }

@@ -63,6 +63,17 @@ namespace MicrobUy_API.Services.TenantInstanceService
         }
 
         /// <summary>
+        /// Devuelve la instancia que coincida con el dominio dado
+        /// </summary>
+        /// <param name="domain">dominio de la instancia</param>
+        /// <returns>retorna una instancia</returns>
+        public async Task<TenantInstanceModel> GetInstanceByDomain(string domain)
+        {
+            var instance = _context.TenantInstances.Include(x => x.InstanceAdministrators).FirstOrDefault(x => x.Dominio == domain && x.Activo);
+            return instance;
+        }
+
+        /// <summary>
         /// Modifica la Instancia 
         /// </summary>
         /// <param name="instance">Datos de la instancia modificada</param>

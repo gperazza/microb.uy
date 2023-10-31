@@ -3,7 +3,6 @@ using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.JwtFeatures;
 using MicrobUy_API.Middleware;
-using MicrobUy_API.Models;
 using MicrobUy_API.Services.AccountService;
 using MicrobUy_API.Services.PostService;
 using MicrobUy_API.Services.TenantInstanceService;
@@ -13,7 +12,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 

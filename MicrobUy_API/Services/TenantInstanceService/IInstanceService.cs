@@ -27,6 +27,13 @@ namespace MicrobUy_API.Services.TenantInstanceService
         Task<TenantInstanceModel> GetInstance(int instanceId);
 
         /// <summary>
+        /// Devuelve la instancia que coincida con el dominio dado
+        /// </summary>
+        /// <param name="domain">dominio de la instancia</param>
+        /// <returns>retorna una instancia</returns>
+        Task<TenantInstanceModel> GetInstanceByDomain(string domain);
+
+        /// <summary>
         /// Modifica la Instancia 
         /// </summary>
         /// <param name="instance">Datos de la instancia modificada</param>
