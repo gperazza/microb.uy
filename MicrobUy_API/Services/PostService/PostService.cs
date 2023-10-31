@@ -28,7 +28,6 @@ namespace MicrobUy_API.Services.PostService
 
             newPost.UserOwner = userExist;
             newPost.Created =  DateTime.Now;
-            newPost.isComment = false;
             await _context.AddAsync(newPost);
             _context.SaveChanges();
 
@@ -37,8 +36,8 @@ namespace MicrobUy_API.Services.PostService
 
         public async Task<PostModel> CreatePostComment(int postId, CreatePostDto postComment, string userName)
         {
-            PostModel newPost = _mapper.Map<PostModel>(postComment);
-            PostModel aux_post = _context.Post.Where(x => x.PostId == postId).FirstOrDefault();
+            CommentModel newPost = _mapper.Map<CommentModel>(postComment);
+            PostModel aux_post = _context.Post.FirstOrDefault(x => x.PostId == postId);
             UserModel userExist = _context.User.Where(x => x.UserName == userName).FirstOrDefault();
 
             if (userExist == null) return null;
@@ -46,7 +45,6 @@ namespace MicrobUy_API.Services.PostService
 
             newPost.UserOwner = userExist;
             newPost.Created = DateTime.Now;
-            newPost.isComment = true;
 
             aux_post.Comments.Add(newPost);
             _context.SaveChanges();
@@ -56,7 +54,7 @@ namespace MicrobUy_API.Services.PostService
 
         public async Task <IEnumerable<PostModel>> GetPostByUser(string userName)
         {
-            var post = _context.Post.Where(x => x.UserOwner.UserName == userName && x.isComment == false).Include(x => x.Comments).Include(x => x.UserOwner)
+            var post = _context.Post.Where(x => x.UserOwner.UserName == userName).Include(x => x.Comments).Include(x => x.UserOwner)
                 .Include(x => x.Likes).ToList();
             return post;
         }

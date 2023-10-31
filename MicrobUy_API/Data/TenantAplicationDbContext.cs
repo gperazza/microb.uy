@@ -1,5 +1,6 @@
 ﻿using MicrobUy_API.Models;
 using MicrobUy_API.Tenancy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Hosting;
@@ -27,6 +28,7 @@ namespace MicrobUy_API.Data
             modelBuilder.Entity<UserModel>().HasMany(e => e.AdministratedInstances).WithMany(e => e.InstanceAdministrators).UsingEntity("InstanceAdministrators");
             modelBuilder.Entity<UserModel>().HasMany(e => e.Posts).WithOne(e => e.UserOwner);
             modelBuilder.Entity<PostModel>().OwnsOne(x => x.Hashtag);
+            modelBuilder.Entity<PostModel>().HasDiscriminator<string>("Discriminator").HasValue<PostModel>("PostModel").HasValue<CommentModel>("CommentModel");
             modelBuilder.Entity<UserModel>().HasQueryFilter(mt => mt.TenantInstanceId == _tenant);
             modelBuilder.Entity<PostModel>().HasQueryFilter(mt => mt.TenantInstanceId == _tenant);
         }
