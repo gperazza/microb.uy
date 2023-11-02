@@ -52,6 +52,11 @@ namespace MicrobUy_API.Data
                             PostModel newEntery = (PostModel)entry.Entity;
                             newEntery.TenantInstanceId = _tenant;
                         }
+                        if (entry.Entity.GetType() == typeof(CommentModel))
+                        {
+                            PostModel newEntery = (CommentModel)entry.Entity;
+                            newEntery.TenantInstanceId = _tenant;
+                        }
                         break;
                 }
             }
