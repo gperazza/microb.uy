@@ -61,6 +61,20 @@ namespace MicrobUy_API.Services.PostService
             return post;
         }
 
+        public async Task<PostModel> LikeComment(int postId, string userName)
+        {
+            PostModel aux_post = _context.Post.FirstOrDefault(x => x.PostId == postId);
+            UserModel aux_user = _context.User.Where(x => x.UserName == userName).FirstOrDefault();
+
+            if (aux_user == null) return null;
+            if (aux_post == null) return null;
+
+            aux_post.Likes.Add(aux_user);
+            _context.SaveChanges();
+
+            return aux_post;
+        }
+
     }
 
     }

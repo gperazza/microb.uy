@@ -71,6 +71,23 @@ namespace MicrobUy_API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("AddLikeToPost")]
+        public async Task<IActionResult> LikeAsync(int postId, string userName)
+        {
+            IEnumerable<string> errors;
+            List<string> listOfErrors = new List<string>();
+
+            var result = await _postService.LikeComment(postId, userName);
+            if (result == null)
+            {
+                listOfErrors.Add("Error al likear el posteo");
+                errors = listOfErrors.Select(x => x);
+                return BadRequest(new UserPostResponseDto { Errors = errors });
+            }
+            return Ok(result);
+
+        }
+
 
     }
 }
