@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
+using Azure.Core;
+
 
 namespace MicrobUy_API.Services.PostService
 {
@@ -17,7 +17,7 @@ namespace MicrobUy_API.Services.PostService
         {
             _mapper = mapper;
             _context = context;
-        }   
+        }
 
         public async Task<PostModel> CreatePost(CreatePostDto post, string userName)
         {
@@ -27,7 +27,8 @@ namespace MicrobUy_API.Services.PostService
             if (userExist == null) return null;
 
             newPost.UserOwner = userExist;
-            newPost.Created =  DateTime.Now;
+            newPost.Created = DateTime.Now;
+            newPost.isComment = false;
             await _context.AddAsync(newPost);
             _context.SaveChanges();
 
@@ -45,6 +46,7 @@ namespace MicrobUy_API.Services.PostService
 
             newPost.UserOwner = userExist;
             newPost.Created = DateTime.Now;
+            newPost.isComment = true;
 
             aux_post.Comments.Add(newPost);
             _context.SaveChanges();
@@ -52,13 +54,13 @@ namespace MicrobUy_API.Services.PostService
             return newPost;
         }
 
-        public async Task <IEnumerable<PostModel>> GetPostByUser(string userName)
+        public async Task<IEnumerable<PostModel>> GetPostByUser(string userName)
         {
-            var post = _context.Post.Where(x => x.UserOwner.UserName == userName).Include(x => x.Comments).Include(x => x.UserOwner)
-                .Include(x => x.Likes).ToList();
+            var post = _context.Post.Where(x => x.UserOwner.UserName == userName && x.isComment==false).Include(x => x.Comments).Include(x => x.UserOwner)
+                .Include(x => x.Likes).Include(x => x.Hashtag).Include(X=> X.Likes).ToList();
             return post;
         }
 
-        
     }
-}
+
+    }
