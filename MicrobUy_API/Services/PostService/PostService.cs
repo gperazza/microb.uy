@@ -45,7 +45,6 @@ namespace MicrobUy_API.Services.PostService
 
             newPost.UserOwner = userExist;
             newPost.Created = DateTime.Now;
-  
 
             aux_post.Comments.Add(newPost);
             _context.SaveChanges();
@@ -55,7 +54,7 @@ namespace MicrobUy_API.Services.PostService
 
         public async Task<IEnumerable<PostModel>> GetPostByUser(string userName)
         {
-            var post = _context.Post.Where(x => x.UserOwner.UserName == userName).Include(x => x.Comments).Include(x => x.UserOwner)
+            var post = _context.Post.Where(x => x.UserOwner.UserName == userName && !(x is CommentModel)).Include(x => x.Comments).Include(x => x.UserOwner)
                 .Include(x => x.Likes).Include(x => x.Hashtag).Include(X=> X.Likes).ToList();
             return post;
         }
