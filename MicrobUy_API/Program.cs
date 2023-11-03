@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System;
+using Neo4j.Driver;
+using MicrobUy_API.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +54,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<IInstanceService, InstanceService>();
 builder.Services.AddScoped<ITenantInstance, TenantInstance>();
 builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<INeo4jUsersRepository, Neo4jUsersRepository>();//neo4j
 builder.Services.AddScoped<IValidator<CreateInstanceRequestDto>, CreateInstanceRequestValidator>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateInstanceRequestValidator>();
@@ -60,6 +63,15 @@ builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
+
+//NEO4J
+builder.Services.AddSingleton(GraphDatabase.Driver(
+    Environment.GetEnvironmentVariable("NEO4J_URI") ?? "bolt://localhost",
+    AuthTokens.Basic(
+        Environment.GetEnvironmentVariable("NEO4J_USER") ?? "micro",
+        Environment.GetEnvironmentVariable("NEO4J_PASSWORD") ?? "forcepassword"
+    )
+));
 
 //CORS
 var misReglasCors = "ReglasCors";

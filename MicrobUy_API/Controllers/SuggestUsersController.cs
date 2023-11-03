@@ -1,26 +1,39 @@
-﻿using MicrobUy_API.Models;
+﻿using MicrobUy_API.Data.Repositories;
+using MicrobUy_API.Dtos;
+using MicrobUy_API.Models;
+using MicrobUy_API.Services.TenantInstanceService;
 using Microsoft.AspNetCore.Mvc;
-
+using Neo4j.Driver;
 
 namespace MicrobUy_API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class SuggestUsersController : ControllerBase
-    {/*
-        private readonly IGraphClient _client;
+    {
+        private readonly INeo4jUsersRepository _neo4jUsersRepository;
 
-        public SuggestUsersController(IGraphClient client) {
-            _client = client;
+        public SuggestUsersController(INeo4jUsersRepository neo4jUsersRepository)
+        {
+            _neo4jUsersRepository = neo4jUsersRepository;
         }
 
-        [HttpGet("GetUsers")]
-        public async Task<IActionResult> GetUsers()
+        [HttpGet("CreateUser")]
+        public Task<int> CreateUser(int UserId, int tenantId, string username, string occupation, string city)
         {
-            var users = await _client.Cypher.Match("(n: User)")
-                                            .Return(n => n.As<UserModel>()).ResultsAsync;
+            return _neo4jUsersRepository.CreateUser(UserId, tenantId, username, occupation, city);
+        }
 
-            return Ok(users);
-        }*/
+        [HttpGet("CreatePost")]
+        public Task<int> CreatePost(int UserId, int tenantId, int postId, string postCreated)
+        {
+            return _neo4jUsersRepository.CreatePost(UserId, tenantId, postId, postCreated);
+        }
+
+        [HttpGet("UpdateUser")]
+        public Task<int> UpdateUser(int UserId, int tenantId, string username, string occupation, string city)
+        {
+            return _neo4jUsersRepository.UpdateUser(UserId, tenantId, username, occupation, city);
+        }
     }
 }
