@@ -2,7 +2,7 @@
 using Azure.Core;
 using FluentValidation;
 using FluentValidation.Results;
-using MicrobUy_API.Dtos;
+using MicrobUy_API.Dtos.PostDto;
 using MicrobUy_API.JwtFeatures;
 using MicrobUy_API.Models;
 using MicrobUy_API.Services.AccountService;

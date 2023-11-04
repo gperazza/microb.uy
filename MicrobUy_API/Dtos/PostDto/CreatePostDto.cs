@@ -1,6 +1,6 @@
 ﻿using MicrobUy_API.Models;
 
-namespace MicrobUy_API.Dtos
+namespace MicrobUy_API.Dtos.PostDto
 {
     public class CreatePostDto
     {

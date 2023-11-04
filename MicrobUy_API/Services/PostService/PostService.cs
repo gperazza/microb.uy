@@ -1,9 +1,17 @@
 ﻿using AutoMapper;
 using MicrobUy_API.Data;
-using MicrobUy_API.Dtos;
 using MicrobUy_API.Models;
+
 using Microsoft.EntityFrameworkCore;
 using Azure.Core;
+
+
+using MicrobUy_API.Services.AccountService;
+
+using Microsoft.EntityFrameworkCore;
+using Azure.Core;
+using MicrobUy_API.Dtos.PostDto;
+using MicrobUy_API.Dtos;
 
 
 namespace MicrobUy_API.Services.PostService
@@ -52,11 +60,13 @@ namespace MicrobUy_API.Services.PostService
             return newPost;
         }
 
-        public async Task<IEnumerable<PostModel>> GetPostByUser(string userName)
+        public async Task<IEnumerable<PostDto>> GetPostByUser(string userName)
         {
-            var post = _context.Post.Where(x => x.UserOwner.UserName == userName && !(x is CommentModel)).Include(x => x.Comments).Include(x => x.UserOwner)
-                .Include(x => x.Likes).Include(x => x.Hashtag).Include(X=> X.Likes).ToList();
-            return post;
+            var aux_post = _context.Post.Where(x => x.UserOwner.UserName == userName && !(x is CommentModel)).Include(x => x.Comments).Include(x => x.UserOwner)
+               .Include(x => x.Likes).Include(x => x.Hashtag).Include(X=> X.Likes).ToList();
+
+            var postDto = _mapper.Map<List<PostModel>, List<PostDto>>(aux_post);
+            return postDto;
         }
 
         public async Task<PostModel> LikeComment(int postId, string userName)
@@ -71,8 +81,8 @@ namespace MicrobUy_API.Services.PostService
             _context.SaveChanges();
 
             return aux_post;
+
         }
-
     }
 
-    }
+}
