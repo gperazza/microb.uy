@@ -1,9 +1,15 @@
 ﻿using AutoMapper;
 using Azure.Core;
 using MicrobUy_API.Data;
-using MicrobUy_API.Dtos;
 using MicrobUy_API.Models;
+<<<<<<< Updated upstream
 using MicrobUy_API.Services.AccountService;
+=======
+using Microsoft.EntityFrameworkCore;
+using Azure.Core;
+using MicrobUy_API.Dtos.PostDto;
+using MicrobUy_API.Dtos;
+>>>>>>> Stashed changes
 
 namespace MicrobUy_API.Services.PostService
 {
@@ -53,9 +59,39 @@ namespace MicrobUy_API.Services.PostService
             throw new NotImplementedException();
         }
 
+<<<<<<< Updated upstream
         public Task<PostModel> CreatePostComment(int postId, CreatePostDto postComment, string userEmail)
         {
             throw new NotImplementedException();
         }
+=======
+        public async Task<IEnumerable<PostDto>> GetPostByUser(string userName)
+        {
+            var aux_post = _context.Post.Where(x => x.UserOwner.UserName == userName && !(x is CommentModel)).Include(x => x.Comments).Include(x => x.UserOwner)
+               .Include(x => x.Likes).Include(x => x.Hashtag).Include(X=> X.Likes).ToList();
+
+            var postDto = _mapper.Map<List<PostModel>, List<PostDto>>(aux_post);
+            return postDto;
+        }
+
+        public async Task<PostModel> LikeComment(int postId, string userName)
+        {
+            PostModel aux_post = _context.Post.FirstOrDefault(x => x.PostId == postId);
+            UserModel aux_user = _context.User.Where(x => x.UserName == userName).FirstOrDefault();
+
+            if (aux_user == null) return null;
+            if (aux_post == null) return null;
+
+            aux_post.Likes.Add(aux_user);
+            _context.SaveChanges();
+
+            return aux_post;
+        }
+
+ 
+
+    }
+
+>>>>>>> Stashed changes
     }
 }
