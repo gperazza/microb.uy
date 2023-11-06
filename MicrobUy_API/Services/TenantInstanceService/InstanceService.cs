@@ -92,21 +92,5 @@ namespace MicrobUy_API.Services.TenantInstanceService
 
 
         }
-
-        ///// <summary>
-        ///// Modifica la Instancia 
-        ///// </summary>
-        ///// <param name="instance">Datos de la instancia modificada</param>
-        ///// <returns>Devuelve la instancia modificada</returns>
-        //public async Task(int tenantInstanceid)
-        //{
-        //    TenantInstanceModel instanceToDelete = _context.TenantInstances.FirstOrDefault(x => x.TenantInstanceId == tenantInstanceid); 
-        //    instanceToDelete.Activo = false 
-
-        //    _context.Update(newInstance);
-        //    return _context.SaveChanges();
-
-
-        //}
     }
 }
