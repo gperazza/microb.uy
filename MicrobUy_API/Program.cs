@@ -1,3 +1,5 @@
+using Firebase.Auth.Providers;
+using Firebase.Auth;
 using FluentValidation;
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
@@ -17,6 +19,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+
+
+var firebaseProjectName = builder.Configuration.GetValue<string>("FireBaseSettings:LaboratorioNet");
+builder.Services.AddSingleton(new FirebaseAuthClient(new FirebaseAuthConfig
+{
+    ApiKey = builder.Configuration.GetValue<string>("FireBaseSettings:apiKey"),
+    AuthDomain = $"{firebaseProjectName}.firebaseapp.com",
+    Providers = new FirebaseAuthProvider[]
+    {
+        new GoogleProvider()
+    }
+}));
 builder.Services.AddAuthentication(opt =>
 {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -34,6 +48,15 @@ builder.Services.AddAuthentication(opt =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
             .GetBytes(jwtSettings.GetSection("securityKey").Value))
     };
+    options.Authority = $"https://securetoken.google.com/{firebaseProjectName}";
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = $"https://securetoken.google.com/{firebaseProjectName}",
+        ValidateAudience = true,
+        ValidAudience = firebaseProjectName,
+        ValidateLifetime = true
+    };
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -44,7 +67,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddDbContext<TenantAplicationDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
 builder.Services.AddDbContext<TenantInstanceDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
 builder.Services.AddDbContext<IdentityProviderDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(opt => { opt.User.RequireUniqueEmail = false; }) 
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(opt => { opt.User.RequireUniqueEmail = false; })
     .AddEntityFrameworkStores<IdentityProviderDbContext>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<IInstanceService, InstanceService>();
