@@ -3,8 +3,11 @@ using Azure.Core;
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Models;
+using MicrobUy_API.Tenancy;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Reflection.Metadata.Ecma335;
+using System.Text;
 
 namespace MicrobUy_API.Services.TenantInstanceService
 {
@@ -82,11 +85,28 @@ namespace MicrobUy_API.Services.TenantInstanceService
         {
             TenantInstanceModel newInstance = _mapper.Map<TenantInstanceModel>(instance);
             newInstance.TenantInstanceId = _context._tenant;
+            newInstance.Activo = true;
 
-           _context.Update(newInstance);
+            _context.Update(newInstance);
            return _context.SaveChanges();
 
 
         }
+
+        ///// <summary>
+        ///// Modifica la Instancia 
+        ///// </summary>
+        ///// <param name="instance">Datos de la instancia modificada</param>
+        ///// <returns>Devuelve la instancia modificada</returns>
+        //public async Task(int tenantInstanceid)
+        //{
+        //    TenantInstanceModel instanceToDelete = _context.TenantInstances.FirstOrDefault(x => x.TenantInstanceId == tenantInstanceid); 
+        //    instanceToDelete.Activo = false 
+
+        //    _context.Update(newInstance);
+        //    return _context.SaveChanges();
+
+
+        //}
     }
 }
