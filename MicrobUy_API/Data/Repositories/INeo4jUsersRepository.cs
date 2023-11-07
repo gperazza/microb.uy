@@ -5,8 +5,8 @@ namespace MicrobUy_API.Data.Repositories
 {
     public interface INeo4jUsersRepository
     {
-        Task<int> CreateUser(int userId, int tenantId, string username, string occupation, string city);
-        Task<int> CreatePost(int userId, int tenantId, int postId, string postCreated);
+        Task CreateUser(int userId, int tenantId, string username, string occupation, string city);
+        Task<int> CreatePost(int userId, int tenantId, int postId, string postCreated/*, List<String> hashtag*/);
         Task<int> UpdateUser(int userId, int tenantId, string username, string occupation, string city);
     }
 }

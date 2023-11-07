@@ -17,17 +17,18 @@ namespace MicrobUy_API.Controllers
         {
             _neo4jUsersRepository = neo4jUsersRepository;
         }
-
+        
         [HttpGet("CreateUser")]
-        public Task<int> CreateUser(int UserId, int tenantId, string username, string occupation, string city)
+        public async Task<ActionResult> CreateUser(int UserId, int tenantId, string username, string occupation, string city)
         {
-            return _neo4jUsersRepository.CreateUser(UserId, tenantId, username, occupation, city);
+            await _neo4jUsersRepository.CreateUser(UserId, tenantId, username, occupation, city);
+            return Ok();
         }
 
         [HttpGet("CreatePost")]
-        public Task<int> CreatePost(int UserId, int tenantId, int postId, string postCreated)
+        public Task<int> CreatePost(int UserId, int tenantId, int postId, string postCreated/*,List<String> hashtag*/)
         {
-            return _neo4jUsersRepository.CreatePost(UserId, tenantId, postId, postCreated);
+            return _neo4jUsersRepository.CreatePost(UserId, tenantId, postId, postCreated/*, hashtag*/);
         }
 
         [HttpGet("UpdateUser")]
