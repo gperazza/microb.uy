@@ -17,7 +17,7 @@ namespace MicrobUy_API.Models
         public string ProfileImage { get; set; } 
         public string Biography { get; set; }
         public string Occupation { get; set; } 
-        public string City { get; set; }
+        public CityModel City { get; set; }
         public DateTime Birthday { get; set; }
         public bool IsSanctioned { get; set; }
         public DateTime CreationDate { get; set; }

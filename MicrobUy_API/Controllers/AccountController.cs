@@ -6,6 +6,7 @@ using MicrobUy_API.JwtFeatures;
 using MicrobUy_API.Models;
 using MicrobUy_API.Services.AccountService;
 using MicrobUy_API.Services.TenantInstanceService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
@@ -144,12 +145,6 @@ namespace MicrobUy_API.Controllers
             return Ok(new UserAuthenticationResponseDto { IsAuthSuccessful = true, Token = token });
         }
 
-        [HttpGet("ObtenerUsuariosByInstance")]
-        public async Task<IActionResult> ObtenerUsuariosByInstance()
-        {
-            IEnumerable<UserModel> usuarios = await _accountService.GetUsuarioByInstance();
-            return Ok(usuarios);
-        }
 
         [HttpGet("GetUsersByInstance")]
         public async Task<IActionResult> GetUsersByInstance()

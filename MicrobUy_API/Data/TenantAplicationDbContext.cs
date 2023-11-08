@@ -21,6 +21,8 @@ namespace MicrobUy_API.Data
         public DbSet<TenantInstanceModel> TenantInstances { get; set; }
         public DbSet<UserModel> User { get; set; }
         public DbSet<PostModel> Post { get; set; }
+        public DbSet<TematicaModel> Tematica { get; set; }
+        public DbSet<CityModel> City{ get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

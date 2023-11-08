@@ -41,6 +41,5 @@ namespace MicrobUy_API.Services.AccountService
                 .Include(x => x.Likes)
               .FirstOrDefault(x => x.UserName == userName);
         }
-
     }
 }

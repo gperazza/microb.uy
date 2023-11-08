@@ -87,7 +87,5 @@ namespace MicrobUy_API.Controllers
             return Ok(result);
 
         }
-
-
     }
 }

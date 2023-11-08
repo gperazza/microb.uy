@@ -14,6 +14,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using MicrobUy_API.Data.SeedData;
+using Google;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using MicrobUy_API.Services.GeneralDataService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,6 +78,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<IInstanceService, InstanceService>();
 builder.Services.AddScoped<ITenantInstance, TenantInstance>();
 builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IGeneralDataService, GeneralDataService>();
 builder.Services.AddScoped<IValidator<CreateInstanceRequestDto>, CreateInstanceRequestValidator>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateInstanceRequestValidator>();
@@ -99,6 +105,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<TenantAplicationDbContext>;
+    SeedTematica.RunSeedTematica(context.Invoke());
+    SeedCity.RunSeedCity(context.Invoke());
 }
 
 app.UseCors(misReglasCors);
