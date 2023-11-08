@@ -15,6 +15,7 @@ namespace MicrobUy_API.Mapper
             CreateMap<CreatePostDto, PostModel>();
             CreateMap<CreateTematicaRequestDto, TematicaModel>();
             CreateMap<CreatePostDto, CommentModel>();
+            CreateMap<CityRequestDto, CityModel>();
             CreateMap<PostModel, PostDto>();
             CreateMap<UserModel, UserPostDto>();
             CreateMap<ModifyInstanceRequest, TenantInstanceModel>();
