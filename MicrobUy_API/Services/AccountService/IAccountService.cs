@@ -10,5 +10,7 @@ namespace MicrobUy_API.Services.AccountService
         Task<IEnumerable<UserModel>> GetUsuarioByInstance();
 
         Task<UserModel> GetUser(string userName);
+
+        Task<int> ModifyUser(ModifyUserRequestDto user);
     }
 }

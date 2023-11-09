@@ -14,6 +14,7 @@ namespace MicrobUy_API.Mapper
             CreateMap<UserAuthenticationRequestDto, IdentityUser>().ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Username));
             CreateMap<CreatePostDto, PostModel>();
             CreateMap<CreateTematicaRequestDto, TematicaModel>();
+            CreateMap<ModifyUserRequestDto, UserModel>();
             CreateMap<CreatePostDto, CommentModel>();
             CreateMap<CityRequestDto, CityModel>();
             CreateMap<PostModel, PostDto>();

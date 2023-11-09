@@ -160,5 +160,21 @@ namespace MicrobUy_API.Controllers
             return Ok(user);
         }
 
+        [HttpPut("ModifyUser")]
+        public async Task<IActionResult> ModifyUser([FromBody] ModifyUserRequestDto user)
+        {
+            IEnumerable<string> errors;
+            List<string> listOfErrors = new List<string>();
+            var result = await _accountService.ModifyUser(user);
+            
+            if (result != 1)
+            {
+                listOfErrors.Add("No fue posible modificar el usario");
+                errors = listOfErrors.Select(x => x);
+                return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+
+            }
+            return Ok(result);
+        }
     }
 }

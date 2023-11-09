@@ -97,7 +97,7 @@ namespace MicrobUy_API.Services.TenantInstanceService
             if (result == 1)
             {
                 var check = _context.TenantInstances.Include(b => b.Tematica).FirstOrDefault(b => b.TenantInstanceId == _context._tenant);
-                if (check.Tematica.Name != newInstance.Tematica.Name)
+                if (check.Tematica != newInstance.Tematica)
                 {
                     check.Tematica = newInstance.Tematica;
                     _context.Update(check);

@@ -82,13 +82,11 @@ namespace MicrobUy_API.Controllers
             IEnumerable<string> errors;
             List<string> listOfErrors = new List<string>();
             var result = await _tenantInstanceService.ModifyInstance(instance);
-            if (result == null)
+            if (result != 1)
             {
-
-                listOfErrors.Add("La Instancia no existe");
+                listOfErrors.Add("No fue posible modificar la instancia");
                 errors = listOfErrors.Select(x => x);
                 return BadRequest(new UserRegistrationResponseDto { Errors = errors });
-
             }
             return Ok(result);
         }
