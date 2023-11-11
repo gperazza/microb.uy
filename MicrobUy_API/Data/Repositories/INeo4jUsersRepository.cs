@@ -5,8 +5,11 @@ namespace MicrobUy_API.Data.Repositories
 {
     public interface INeo4jUsersRepository
     {
-        Task CreateUser(int userId, int tenantId, string username, string occupation, string city);
-        Task<int> CreatePost(int userId, int tenantId, int postId, string postCreated/*, List<String> hashtag*/);
-        Task<int> UpdateUser(int userId, int tenantId, string username, string occupation, string city);
+        Task CreateUser(CreateUserNeo4jDto createUserNeo4JDto);
+        Task<int> CreatePost(CrearPostNeo4jDto crearPostNeo4JDto);
+        Task<int> UpdateUser(CreateUserNeo4jDto createUserNeo4JDto);
+        Task<int> GiveLike(int userId, int tenantId, int postId);
+        Task<int> TopHashtagByTenant(int tenantId, int topCant);
+        Task<int> TopHashtagAllTenant(int topCant);
     }
 }

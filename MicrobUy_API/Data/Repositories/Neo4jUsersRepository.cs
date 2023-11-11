@@ -37,66 +37,118 @@ namespace MicrobUy_API.Data.Repositories
                 ).ToList();
         }
         //Create a node in Neo4j user, city and occupation, along with their relationship
-        public async Task CreateUser(int userId, int tenantId, string username, string occupation, string city)
+        public async Task CreateUser(CreateUserNeo4jDto createUsNeo4jDto)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
 
              await session.ExecuteWriteAsync(async transaction =>
             {
-                var cursor = await transaction.RunAsync(@"MERGE (user:User { name: $username, tenantID: $tenantId, userId: $userId })
-                                                            ON CREATE SET user.userId = $userId
-                                                          MERGE (city:City {name: $city})
-                                                          MERGE (ocupation:Ocupation {name: $occupation})
-                                                          CREATE (user)-[r1:LIVE{importance:10}]->(city),
-                                                          (user)-[r2:HAVE{importance:20}]->(ocupation)",
-                                                          new { userId, tenantId, username, occupation, city });
+                var cursor = await transaction.RunAsync(@"
+                    MERGE (user:User { name: $UserName, tenantID: $TenantId, userId: $UserId, isSanctioned: $IsSanctioned, creationDate:date($CreationDate)}) 
+                        ON CREATE SET user.userId = $UserId
+                    MERGE (birth:Birthday {birthdayDate:date($Birthday)})
+                    MERGE (city:City {name: $City, tenantID: $TenantId})
+                    MERGE (ocupation:Ocupation {name: $Occupation, tenantID: $TenantId})
+                    CREATE (user)-[:LIVE{importance:10}]->(city),
+                           (user)-[:BORN{importance:30}]->(birth),
+                           (user)-[:HAVE{importance:20}]->(ocupation)",
+                    new { createUsNeo4jDto.UserId, createUsNeo4jDto.TenantId, createUsNeo4jDto.UserName, createUsNeo4jDto.Occupation, createUsNeo4jDto.City, createUsNeo4jDto.CreationDate, createUsNeo4jDto.IsSanctioned, createUsNeo4jDto.Birthday });
 
                 var summary = await cursor.ConsumeAsync();
             });
         }
         //Create a node in Neo4j Post and relate it to the user who created said post
-        public async Task<int> CreatePost(int userId, int tenantId, int postId, string postCreated/*, List<String> hashtag*/)
+        public async Task<int> CreatePost(CrearPostNeo4jDto crearPDto)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
             return await session.ExecuteWriteAsync(async transaction =>
             {
-                var cursor = await transaction.RunAsync(@"MATCH (u:User {userId: $userId}) 
-                                                          MERGE (pos:Post {postId: $postId, tenantId: $tenantId, postCreated:date($postCreated)})
-                                                          CREATE (u)-[r1:POSTED]->(pos)",
-                                                          new { userId, tenantId, postId, postCreated });
-                
-                /*foreach (String hashtagOne in hashtag)
-                {
-                    var cursorHastag = await transaction.RunAsync(@"MATCH (pos:Post) WHERE pos.postId = $postId and pos.tenantId = $tenantId
-                                                                    MERGE (has:Hashtag {name: $hashtagOne})
-                                                                    MERGE (pos)-[r1:WITH_HASHTAG {importance: 40}]->(has)", 
-                                                                    new { tenantId, postId, hashtagOne });
-                }*/
+                var cursor = await transaction.RunAsync(@"
+                    MATCH (u:User {userId: $userId}) 
+                    MERGE (pos:Post {postId: $postId, tenantId: $tenantId, postCreated:date($postCreated), isSanctioned: $isSanctioned})
+                    CREATE (u)-[r2:POSTED]->(pos)
+                    WITH pos
+                    UNWIND $hashtags AS hashtag
+                    MERGE (h:Hashtag {name: hashtag, tenantID: $tenantId})
+                    CREATE (pos)-[r1:WITH_HASHTAG{importance:40}]->(h)",
+                    new { crearPDto.userId, crearPDto.tenantId, crearPDto.postId, crearPDto.postCreated, crearPDto.isSanctioned, crearPDto.hashtags });
+
                 var summary = await cursor.ConsumeAsync();
                 return summary.Counters.NodesCreated + summary.Counters.RelationshipsCreated + summary.Counters.PropertiesSet + summary.Counters.LabelsAdded;
             });
         }
         //Update user data
-        public async Task<int> UpdateUser(int userId, int tenantId, string username, string occupation, string city)
+        public async Task<int> UpdateUser(CreateUserNeo4jDto createUsNeo4jDto)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
 
             return await session.ExecuteWriteAsync(async transaction =>
             {
-                var cursor = await transaction.RunAsync(@"MATCH (u:User)
-                                                          WHERE u.userId = $userId AND u.tenantID = $tenantId
-                                                          SET u.name = $username
-                                                          MERGE (city:City {name: $city})
-                                                          MERGE (ocupation:Ocupation {name: $occupation})
-                                                          MERGE (u)-[:LIVE {importance: 10}]->(city)
-                                                          MERGE (u)-[:HAVE {importance: 20}]->(ocupation)",
-                                                          new { userId, tenantId, username, occupation, city });
+                var cursor = await transaction.RunAsync(@"
+                    MATCH (u:User)
+                    WHERE u.userId = $UserId AND u.tenantID = $TenantId SET u.name = $UserName
+                    MERGE (city:City {name: $City, tenantID: $TenantId})
+                    MERGE (ocupation:Ocupation {name: $Occupation, tenantID: $TenantId})
+                    MERGE (birth:Birthday {birthdayDate:date($Birthday)})
+                    MERGE (u)-[:LIVE {importance: 10}]->(city)
+                    MERGE (u)-[:HAVE {importance: 20}]->(ocupation)
+                    MERGE (u)-[:BORN{importance:30}]->(birth)",
+                    new { createUsNeo4jDto.UserId, createUsNeo4jDto.TenantId, createUsNeo4jDto.UserName, createUsNeo4jDto.Occupation, createUsNeo4jDto.City, createUsNeo4jDto.CreationDate, createUsNeo4jDto.IsSanctioned, createUsNeo4jDto.Birthday });
 
                 var summary = await cursor.ConsumeAsync();
                 return summary.Counters.NodesCreated + summary.Counters.RelationshipsCreated + summary.Counters.PropertiesSet + summary.Counters.LabelsAdded;
             });
         }
-
-
+        //Created a relationship whit user and post whit liked
+        public async Task<int> GiveLike(int userId, int tenantId, int postId)
+        {
+            await using var session = _driver.AsyncSession(WithDatabase);
+            return await session.ExecuteWriteAsync(async transaction =>
+            {
+                var cursor = await transaction.RunAsync(@"MATCH (u:User) 
+                                                          WHERE u.userId = $userId AND u.tenantID = $tenantId
+                                                          MATCH (pos:Post) WHERE pos.postId = $postId
+                                                          MERGE (u)-[:LIKE{importance:50}]->(pos)",
+                                                          new { userId, tenantId, postId });
+                var summary = await cursor.ConsumeAsync();
+                return summary.Counters.NodesCreated + summary.Counters.RelationshipsCreated + summary.Counters.PropertiesSet + summary.Counters.LabelsAdded;
+            });
+        }
+        //top hashtag de toda la paltaforma, por ver el retorno 
+        public async Task<int> TopHashtagByTenant(int tenantId, int topCant)
+        {
+            await using var session = _driver.AsyncSession(WithDatabase);
+            return await session.ExecuteReadAsync(async transaction =>
+            {
+                var cursor = await transaction.RunAsync(@"MATCH (h:Hashtag) where h.tenantId = $tenantId
+                                                          WITH h, [()-[:WITH_HASHTAG]->(h) | 1] AS relationships
+                                                          WHERE SIZE(relationships) > 0
+                                                          WITH h, SIZE(relationships) AS relationshipCount
+                                                          ORDER BY relationshipCount DESC
+                                                          LIMIT $topCant
+                                                          RETURN h",
+                                                          new { tenantId, topCant });
+                var summary = await cursor.ConsumeAsync();
+                return summary.Counters.NodesCreated + summary.Counters.RelationshipsCreated + summary.Counters.PropertiesSet + summary.Counters.LabelsAdded;
+            });
+        }
+        //top hashtag de toda la paltaforma, por ver el retorno
+        public async Task<int> TopHashtagAllTenant(int topCant)
+        {
+            await using var session = _driver.AsyncSession(WithDatabase);
+            return await session.ExecuteReadAsync(async transaction =>
+            {
+                var cursor = await transaction.RunAsync(@"MATCH (h:Hashtag)
+                                                          WITH h, [()-[:WITH_HASHTAG]->(h) | 1] AS relationships
+                                                          WHERE SIZE(relationships) > 0
+                                                          WITH h, SIZE(relationships) AS relationshipCount
+                                                          ORDER BY relationshipCount DESC
+                                                          LIMIT $topCant
+                                                          RETURN h",
+                                                          new {topCant });
+                var summary = await cursor.ConsumeAsync();
+                return summary.Counters.NodesCreated + summary.Counters.RelationshipsCreated + summary.Counters.PropertiesSet + summary.Counters.LabelsAdded;
+            });
+        }
     }
 }

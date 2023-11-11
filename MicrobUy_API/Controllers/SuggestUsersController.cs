@@ -18,23 +18,41 @@ namespace MicrobUy_API.Controllers
             _neo4jUsersRepository = neo4jUsersRepository;
         }
         
-        [HttpGet("CreateUser")]
-        public async Task<ActionResult> CreateUser(int UserId, int tenantId, string username, string occupation, string city)
+        [HttpPost("CreateUser")]
+        public async Task<ActionResult> CreateUser(CreateUserNeo4jDto createUserNeo4JDto)
         {
-            await _neo4jUsersRepository.CreateUser(UserId, tenantId, username, occupation, city);
+            await _neo4jUsersRepository.CreateUser(createUserNeo4JDto);
             return Ok();
         }
 
-        [HttpGet("CreatePost")]
-        public Task<int> CreatePost(int UserId, int tenantId, int postId, string postCreated/*,List<String> hashtag*/)
+        [HttpPost("CreatePost")]
+        public Task<int> CreatePost([FromBody] CrearPostNeo4jDto crearPostNeo4JDto)
         {
-            return _neo4jUsersRepository.CreatePost(UserId, tenantId, postId, postCreated/*, hashtag*/);
+            return _neo4jUsersRepository.CreatePost(crearPostNeo4JDto);
         }
 
-        [HttpGet("UpdateUser")]
-        public Task<int> UpdateUser(int UserId, int tenantId, string username, string occupation, string city)
+        [HttpPut("UpdateUser")]
+        public Task<int> UpdateUser(CreateUserNeo4jDto createUserNeo4JDto)
         {
-            return _neo4jUsersRepository.UpdateUser(UserId, tenantId, username, occupation, city);
+            return _neo4jUsersRepository.UpdateUser(createUserNeo4JDto);
+        }
+
+        [HttpPost("GiveLike")]
+        public Task<int> GiveLike(int UserId, int tenantId, int postId)
+        {
+            return _neo4jUsersRepository.GiveLike(UserId, tenantId, postId);
+        }
+
+        [HttpGet("TopHashtagByTenant")]
+        public Task<int> TopHashtagByTenant(int tenantId, int topCant)
+        {
+            return _neo4jUsersRepository.TopHashtagByTenant(tenantId, topCant);
+        }
+
+        [HttpGet("TopHashtagAllTenant")]
+        public Task<int> TopHashtagAllTenant(int topCant)
+        {
+            return _neo4jUsersRepository.TopHashtagAllTenant(topCant);
         }
     }
 }
