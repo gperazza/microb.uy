@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
+using MicrobUy_API.Migrations.TenantAplicationDb;
 using MicrobUy_API.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace MicrobUy_API.Services.AccountService
 {
@@ -89,6 +91,45 @@ namespace MicrobUy_API.Services.AccountService
             }
 
             return result;
+        }
+
+        public async Task<int> FollowUser(string userName, string userNameToFollow)
+        {
+            UserModel user = _context.User.FirstOrDefault(x => x.UserName == userName);
+            UserModel userToFollow = _context.User.FirstOrDefault(x => x.UserName == userNameToFollow);
+
+            if (user == null || userToFollow == null)
+                return 0;
+           
+            user.Following.Add(userToFollow);
+            userToFollow.Followers.Add(user);
+
+            return _context.SaveChanges();
+
+        }
+
+        public async Task<IEnumerable<FollowedUserDto>> GetFollowedUsers(string userName)
+        {
+            List<FollowedUserDto> following = new List<FollowedUserDto>();
+            UserModel user = _context.User.Include(x => x.Following).FirstOrDefault(x => x.UserName == userName);
+            
+            if (user != null)
+                following = _mapper.Map<List<UserModel>, List<FollowedUserDto>>(user.Following.ToList());
+
+            return following;
+
+        }
+
+        public async Task<IEnumerable<FollowedUserDto>> GetFollowers(string userName)
+        {
+           List<FollowedUserDto> followers = new List<FollowedUserDto>();
+           UserModel user = _context.User.Include(x => x.Followers).FirstOrDefault(x => x.UserName == userName);
+            
+            if(user != null)
+                followers = _mapper.Map<List<UserModel>, List<FollowedUserDto>>(user.Followers.ToList());
+
+            return followers;
+
         }
     }
 }

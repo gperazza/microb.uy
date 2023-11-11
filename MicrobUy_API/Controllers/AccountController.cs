@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Azure.Core;
+using Firebase.Auth;
 using FluentValidation;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.JwtFeatures;
@@ -175,6 +176,39 @@ namespace MicrobUy_API.Controllers
 
             }
             return Ok(result);
+        }
+
+
+        [HttpPut("FollowUser")]
+        public async Task<IActionResult> FollowUser(string userName, string userNameToFollow)
+        {
+            IEnumerable<string> errors;
+            List<string> listOfErrors = new List<string>();
+            int result = await _accountService.FollowUser(userName, userNameToFollow);
+
+            if (result != 2)
+            {
+                listOfErrors.Add("No fue posible seguir al usuario");
+                errors = listOfErrors.Select(x => x);
+                return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+
+            }
+           
+            return Ok(result);
+        }
+
+        [HttpGet("GetFollowedUsers")]
+        public async Task<IActionResult> GetFollowedUsers(string userName)
+        {
+            IEnumerable<FollowedUserDto> usuarios = await _accountService.GetFollowedUsers(userName);
+            return Ok(usuarios);
+        }
+
+        [HttpGet("GetFollowers")]
+        public async Task<IActionResult> GetFollowers(string userName)
+        {
+            IEnumerable<FollowedUserDto> usuarios = await _accountService.GetFollowers(userName);
+            return Ok(usuarios);
         }
     }
 }

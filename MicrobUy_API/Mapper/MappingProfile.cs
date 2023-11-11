@@ -22,6 +22,8 @@ namespace MicrobUy_API.Mapper
             CreateMap<ModifyInstanceRequest, TenantInstanceModel>();
             CreateMap<UserRegistrationRequestDto, UserModel>();
             CreateMap<CreateInstanceRequestDto, TenantInstanceModel>();
+            CreateMap<UserModel, FollowedUserDto>();
+
         }
     }
 }

@@ -12,5 +12,11 @@ namespace MicrobUy_API.Services.AccountService
         Task<UserModel> GetUser(string userName);
 
         Task<int> ModifyUser(ModifyUserRequestDto user);
+
+        Task<IEnumerable<FollowedUserDto>> GetFollowedUsers(string userName);
+
+        Task<int> FollowUser(string userName, string userNameToFollow);
+
+        Task<IEnumerable<FollowedUserDto>> GetFollowers(string userName);
     }
 }
