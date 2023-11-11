@@ -100,55 +100,89 @@ namespace MicrobUy_API.Data.Repositories
             });
         }
         //Created a relationship whit user and post whit liked
-        public async Task<int> GiveLike(int userId, int tenantId, int postId)
+        public async Task<int> GiveLike(GiveLikeNeo4jDto giveLikeNeo4JDto)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
             return await session.ExecuteWriteAsync(async transaction =>
             {
-                var cursor = await transaction.RunAsync(@"MATCH (u:User) 
-                                                          WHERE u.userId = $userId AND u.tenantID = $tenantId
-                                                          MATCH (pos:Post) WHERE pos.postId = $postId
-                                                          MERGE (u)-[:LIKE{importance:50}]->(pos)",
-                                                          new { userId, tenantId, postId });
+                var cursor = await transaction.RunAsync(@"
+                    MATCH (u:User) 
+                    WHERE u.userId = $UserId AND u.tenantID = $TenantId
+                    MATCH (pos:Post) WHERE pos.postId = $PostId
+                    MERGE (u)-[:LIKE{importance:50}]->(pos)",
+                    new { giveLikeNeo4JDto.UserId, giveLikeNeo4JDto.TenantId, giveLikeNeo4JDto.PostId });
                 var summary = await cursor.ConsumeAsync();
                 return summary.Counters.NodesCreated + summary.Counters.RelationshipsCreated + summary.Counters.PropertiesSet + summary.Counters.LabelsAdded;
+            });
+        }
+        public async Task<int> DeleteLike(GiveLikeNeo4jDto giveLikeNeo4JDto)
+        {
+            await using var session = _driver.AsyncSession(WithDatabase);
+            return await session.ExecuteWriteAsync(async transaction =>
+            {
+                var cursor = await transaction.RunAsync(@"
+                    MATCH (u:User) 
+                    WHERE u.userId = $UserId AND u.tenantID = $TenantId
+                    MATCH (pos:Post) WHERE pos.postId = $PostId
+                    WITH pos, u
+                    MATCH (u)-[r:LIKE{importance:50}]->(pos)
+                    delete r",
+                    new { giveLikeNeo4JDto.UserId, giveLikeNeo4JDto.TenantId, giveLikeNeo4JDto.PostId });
+                var summary = await cursor.ConsumeAsync();
+                return summary.Counters.RelationshipsDeleted;
             });
         }
         //top hashtag de toda la paltaforma, por ver el retorno 
-        public async Task<int> TopHashtagByTenant(int tenantId, int topCant)
+        public async Task<List<HashtagNeo4jDto>> TopHashtagByTenant(int tenantId, int topCant)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
             return await session.ExecuteReadAsync(async transaction =>
             {
-                var cursor = await transaction.RunAsync(@"MATCH (h:Hashtag) where h.tenantId = $tenantId
+                var result = await transaction.RunAsync(@"MATCH (h:Hashtag) where h.tenantID = $tenantId
                                                           WITH h, [()-[:WITH_HASHTAG]->(h) | 1] AS relationships
                                                           WHERE SIZE(relationships) > 0
                                                           WITH h, SIZE(relationships) AS relationshipCount
                                                           ORDER BY relationshipCount DESC
                                                           LIMIT $topCant
-                                                          RETURN h",
+                                                          RETURN h.name AS Name, h.tenantID AS TenantID",
                                                           new { tenantId, topCant });
-                var summary = await cursor.ConsumeAsync();
-                return summary.Counters.NodesCreated + summary.Counters.RelationshipsCreated + summary.Counters.PropertiesSet + summary.Counters.LabelsAdded;
+                List<HashtagNeo4jDto> hashtags = await result.ToListAsync(record =>
+                {
+                    return new HashtagNeo4jDto
+                    {
+                        Name = record["Name"].As<string>(),
+                        TenantID = record["TenantID"].As<int>()
+                    };
+                });
+                return hashtags;
             });
         }
         //top hashtag de toda la paltaforma, por ver el retorno
-        public async Task<int> TopHashtagAllTenant(int topCant)
+        public async Task<List<HashtagNeo4jDto>> TopHashtagAllTenant(int topCant)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
             return await session.ExecuteReadAsync(async transaction =>
             {
-                var cursor = await transaction.RunAsync(@"MATCH (h:Hashtag)
+                var result = await transaction.RunAsync(@"MATCH (h:Hashtag)
                                                           WITH h, [()-[:WITH_HASHTAG]->(h) | 1] AS relationships
                                                           WHERE SIZE(relationships) > 0
                                                           WITH h, SIZE(relationships) AS relationshipCount
                                                           ORDER BY relationshipCount DESC
                                                           LIMIT $topCant
-                                                          RETURN h",
+                                                          RETURN h.name AS Name, h.tenantID AS TenantID",
                                                           new {topCant });
-                var summary = await cursor.ConsumeAsync();
-                return summary.Counters.NodesCreated + summary.Counters.RelationshipsCreated + summary.Counters.PropertiesSet + summary.Counters.LabelsAdded;
+                List<HashtagNeo4jDto> hashtags = await result.ToListAsync(record =>
+                {
+                    return new HashtagNeo4jDto
+                    {
+                        Name = record["Name"].As<string>(),
+                        TenantID = record["TenantID"].As<int>()
+                    };
+                });
+                return hashtags;
             });
         }
+
+
     }
 }
