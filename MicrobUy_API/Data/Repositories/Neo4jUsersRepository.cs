@@ -215,5 +215,32 @@ namespace MicrobUy_API.Data.Repositories
             });
 
         }
+
+        public async Task<List<PostWhitMostLikeNeo4jDto>> PostWhitMostLikeByTenant(int tenantId, int topCant)
+        {
+            await using var session = _driver.AsyncSession(WithDatabase);
+            return await session.ExecuteReadAsync(async transaction =>
+            {
+                var result = await transaction.RunAsync(@"
+                    MATCH (p:Post) where p.tenantId = $tenantId
+                    WITH p, [()-[:LIKE]->(p) |1] AS relationships
+                    WHERE SIZE(relationships) > 0
+                    WITH p, SIZE(relationships) AS relationshipCount
+                    ORDER BY relationshipCount DESC
+                    limit $topCant
+                    RETURN p.postId AS PostId, relationshipCount",
+                    new { tenantId, topCant });
+                List<PostWhitMostLikeNeo4jDto> posts = await result.ToListAsync(record =>
+                {
+                    return new PostWhitMostLikeNeo4jDto
+                    {
+                        PostId = record["PostId"].As<int>(),
+                        TenantId = tenantId,
+                        RelationshipCount = record["relationshipCount"].As<int>()
+                    };
+                });
+                return posts;
+            });
+        }
     }
 }
