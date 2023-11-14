@@ -61,5 +61,11 @@ namespace MicrobUy_API.Controllers
         {
             return _neo4jUsersRepository.TopHashtagAllTenant(topCant);
         }
+
+        [HttpGet("PostWhitMostLikeAllTenant")]
+        public Task<List<PostWhitMostLikeNeo4jDto>> PostWhitMostLikeAllTenant(int topCant)
+        {
+            return _neo4jUsersRepository.PostWhitMostLikeAllTenant(topCant);
+        }
     }
 }

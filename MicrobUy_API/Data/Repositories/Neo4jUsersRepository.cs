@@ -27,6 +27,7 @@ namespace MicrobUy_API.Data.Repositories
             return Environment.GetEnvironmentVariable("NEO4J_DATABASE") ?? "node4j";
         }
         //returns a IEnumerable of UserSuggestDto
+        /*
         private static IEnumerable<UserSuggestDto> MapCastUser(IEnumerable<IDictionary<string, object>> users)
         {
             return users
@@ -35,7 +36,7 @@ namespace MicrobUy_API.Data.Repositories
                         dictionary["name"].As<string>()
                     )
                 ).ToList();
-        }
+        }*/
         //Create a node in Neo4j user, city and occupation, along with their relationship
         public async Task CreateUser(CreateUserNeo4jDto createUsNeo4jDto)
         {
@@ -172,14 +173,14 @@ namespace MicrobUy_API.Data.Repositories
                     WITH h, SIZE(relationships) AS relationshipCount
                     ORDER BY relationshipCount DESC
                     LIMIT $topCant
-                    RETURN h.name AS Name, h.tenantID AS TenantID, relationshipCount",
+                    RETURN h.name AS Name, h.tenantID AS TenantId, relationshipCount",
                     new {topCant });
                 List<HashtagNeo4jDto> hashtags = await result.ToListAsync(record =>
                 {
                     return new HashtagNeo4jDto
                     {
                         Name = record["Name"].As<string>(),
-                        TenantID = record["TenantID"].As<int>(),
+                        TenantID = record["TenantId"].As<int>(),
                         RelationshipCount = record["relationshipCount"].As<int>()
                     };
                 });
@@ -187,6 +188,32 @@ namespace MicrobUy_API.Data.Repositories
             });
         }
 
+        public async Task<List<PostWhitMostLikeNeo4jDto>> PostWhitMostLikeAllTenant(int topCant)
+        {
+            await using var session = _driver.AsyncSession(WithDatabase);
+            return await session.ExecuteReadAsync(async transaction =>
+            {
+                var result = await transaction.RunAsync(@"
+                    MATCH (p:Post)
+                    WITH p, [()-[:LIKE]->(p) |1] AS relationships
+                    WHERE SIZE(relationships) > 0
+                    WITH p, SIZE(relationships) AS relationshipCount
+                    ORDER BY relationshipCount DESC
+                    limit $topCant
+                    RETURN p.postId AS PostId,p.tenantId AS TenantId , relationshipCount",
+                    new { topCant });
+                List<PostWhitMostLikeNeo4jDto> posts = await result.ToListAsync(record =>
+                {
+                    return new PostWhitMostLikeNeo4jDto
+                    {
+                        PostId = record["PostId"].As<int>(),
+                        TenantId = record["TenantId"].As<int>(),
+                        RelationshipCount = record["relationshipCount"].As<int>()
+                    };
+                });
+                return posts;
+            });
 
+        }
     }
 }

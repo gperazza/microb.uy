@@ -12,5 +12,6 @@ namespace MicrobUy_API.Data.Repositories
         Task<List<HashtagNeo4jDto>> TopHashtagByTenant(int tenantId, int topCant);
         Task<List<HashtagNeo4jDto>> TopHashtagAllTenant(int topCant);
         Task<int> DeleteLike(GiveLikeNeo4jDto giveLikeNeo4JDto);
+        Task<List<PostWhitMostLikeNeo4jDto>> PostWhitMostLikeAllTenant(int topCant);
     }
 }
