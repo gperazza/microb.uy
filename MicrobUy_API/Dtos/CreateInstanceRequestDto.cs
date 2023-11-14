@@ -9,7 +9,7 @@ namespace MicrobUy_API.Dtos
         public string Dominio { get; set; }
         public string Logo { get; set; }
         public bool Activo { get; set; }
-        public string Tematica { get; set; }
+        public CreateTematicaRequestDto Tematica { get; set; }
         public string Description { get; set; }
         public EsquemaColoresEnum EsquemaColores { get; set; }
         public PrivacidadEnum Privacidad { get; set; }
@@ -20,7 +20,7 @@ namespace MicrobUy_API.Dtos
         public CreateInstanceRequestValidator()
         {
             RuleFor(instance => instance.Nombre).NotNull().NotEmpty().WithMessage("El nombre de la instancia es requerido");
-            RuleFor(instance => instance.Dominio).NotNull().NotEmpty().WithMessage("La URL de la instancia es requerida");
+            RuleFor(instance => instance.Dominio).NotNull().NotEmpty().WithMessage("El dominio de la instancia es requerida");
         }
     }
 }

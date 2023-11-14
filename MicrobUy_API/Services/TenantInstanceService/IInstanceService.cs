@@ -27,10 +27,35 @@ namespace MicrobUy_API.Services.TenantInstanceService
         Task<TenantInstanceModel> GetInstance(int instanceId);
 
         /// <summary>
+        /// Devuelve la instancia que coincida con el dominio dado
+        /// </summary>
+        /// <param name="domain">dominio de la instancia</param>
+        /// <returns>retorna una instancia</returns>
+        Task<TenantInstanceModel> GetInstanceByDomain(string domain);
+
+        /// <summary>
         /// Modifica la Instancia 
         /// </summary>
         /// <param name="instance">Datos de la instancia modificada</param>
         /// <returns>Devuelve la instancia modificada</returns>
         Task<int> ModifyInstance(ModifyInstanceRequest instance);
+
+        /// <summary>
+        /// Borra lógicamente la Instancia 
+        /// </summary>
+        /// <returns>Devuelve retorna 1 si la instancia fue borrada correctamente</returns>
+        Task<int> DeleteInstance();
+
+        /// <summary>
+        /// Activa la Instancia 
+        /// </summary>
+        /// <returns>Retorna 1 si la instancia fue activada correctamente</returns>
+        Task<int> ActiveInstance();
+
+        /// <summary>
+        /// Desactiva la Instancia 
+        /// </summary>
+        /// <returns>Retorna 1 si la instancia fue desactivada correctamente</returns>
+        Task<int> DisableInstance();
     }
 }

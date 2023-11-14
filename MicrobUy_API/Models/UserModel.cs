@@ -17,13 +17,18 @@ namespace MicrobUy_API.Models
         public string ProfileImage { get; set; } 
         public string Biography { get; set; }
         public string Occupation { get; set; } 
-        public string City { get; set; }
+        public CityModel City { get; set; }
         public DateTime Birthday { get; set; }
         public bool IsSanctioned { get; set; }
         public DateTime CreationDate { get; set; }
         public ICollection<TenantInstanceModel> AdministratedInstances { get; set; } = new List<TenantInstanceModel>();
-        public ICollection<UserModel> FollowUsers { get; set; } = new List<UserModel>();
+        [NotMapped]
+        public virtual ICollection<UserModel> Following { get; set; } = new List<UserModel>();
+        [NotMapped]
+        public virtual ICollection<UserModel> Followers { get; set; } = new List<UserModel>();
+        [NotMapped]
         public ICollection<UserModel> BlockUsers { get; set; } = new List<UserModel>();
+        [NotMapped]
         public ICollection<UserModel> MuteUsers { get; set; } = new List<UserModel>();
         //One to many del usuario que postea
         [NotMapped]

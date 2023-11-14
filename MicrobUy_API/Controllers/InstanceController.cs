@@ -82,16 +82,82 @@ namespace MicrobUy_API.Controllers
             IEnumerable<string> errors;
             List<string> listOfErrors = new List<string>();
             var result = await _tenantInstanceService.ModifyInstance(instance);
-            if (result == null)
+            if (result != 1)
             {
-
-                listOfErrors.Add("La Instancia no existe");
+                listOfErrors.Add("No fue posible modificar la instancia");
                 errors = listOfErrors.Select(x => x);
                 return BadRequest(new UserRegistrationResponseDto { Errors = errors });
-
             }
             return Ok(result);
         }
 
+        /// <summary>
+        /// Devuelve una instancia en base a un dominio
+        /// </summary>
+        /// <param name="domain">El dominio de la instancia que se desea obtener</param>
+        /// <returns>Devuelve la instancia que coincide con el dominio</returns>
+        [HttpGet("GetInstanceByDomain")]
+        public async Task<IActionResult> GetInstanceByDomain(string domain)
+        {
+            var instance = await _tenantInstanceService.GetInstanceByDomain(domain);
+            return Ok(instance);
+        }
+
+        /// <summary>
+        /// Borra lógicamente la Instancia 
+        /// </summary>
+        /// <returns>Retorna 1 si la instancia fue borrada correctamente</returns>
+        [HttpPut("DeleteInstance")]
+        public async Task<IActionResult> DeleteInstance()
+        {
+            IEnumerable<string> errors;
+            List<string> listOfErrors = new List<string>();
+            int result = await _tenantInstanceService.DeleteInstance();
+            if (result != 1)
+            {
+                listOfErrors.Add("No fue posible borrar la instancia");
+                errors = listOfErrors.Select(x => x);
+                return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+            }
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Activa la Instancia 
+        /// </summary>
+        /// <returns>Retorna 1 si la instancia fue activada correctamente</returns>
+        [HttpPut("ActiveInstance")]
+        public async Task<IActionResult> ActiveInstance()
+        {
+            IEnumerable<string> errors;
+            List<string> listOfErrors = new List<string>();
+            int result = await _tenantInstanceService.ActiveInstance();
+            if (result != 1)
+            {
+                listOfErrors.Add("No fue posible activar la instancia");
+                errors = listOfErrors.Select(x => x);
+                return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+            }
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Desactiva la Instancia 
+        /// </summary>
+        /// <returns>Retorna 1 si la instancia fue desactivada correctamente</returns>
+        [HttpPut("DisableInstance")]
+        public async Task<IActionResult> DisableInstance()
+        {
+            IEnumerable<string> errors;
+            List<string> listOfErrors = new List<string>();
+            int result = await _tenantInstanceService.DisableInstance();
+            if (result != 1)
+            {
+                listOfErrors.Add("No fue posible desactivar la instancia");
+                errors = listOfErrors.Select(x => x);
+                return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+            }
+            return Ok(result);
+        }
     }
 }

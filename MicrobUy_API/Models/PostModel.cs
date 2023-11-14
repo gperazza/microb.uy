@@ -17,7 +17,7 @@ namespace MicrobUy_API.Models
         public bool isSanctioned { get; set; }
         public DateTime Created { get; set; }
         //Respuestas a un post
-        public ICollection<PostModel> Comments { get; set; } = new List<PostModel>();
+        public ICollection<CommentModel> Comments { get; set; } = new List<CommentModel>();
         //Personas que le dieron me gusta al post
         public ICollection<UserModel> Likes { get; set; } = new List<UserModel>();
         public List<string> Hashtag { get; set; } = new List<string>();
