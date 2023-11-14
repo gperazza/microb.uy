@@ -132,51 +132,55 @@ namespace MicrobUy_API.Data.Repositories
                 return summary.Counters.RelationshipsDeleted;
             });
         }
-        //top hashtag de toda la paltaforma, por ver el retorno 
+        //top hashtags de un tenant en particular
         public async Task<List<HashtagNeo4jDto>> TopHashtagByTenant(int tenantId, int topCant)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
             return await session.ExecuteReadAsync(async transaction =>
             {
-                var result = await transaction.RunAsync(@"MATCH (h:Hashtag) where h.tenantID = $tenantId
-                                                          WITH h, [()-[:WITH_HASHTAG]->(h) | 1] AS relationships
-                                                          WHERE SIZE(relationships) > 0
-                                                          WITH h, SIZE(relationships) AS relationshipCount
-                                                          ORDER BY relationshipCount DESC
-                                                          LIMIT $topCant
-                                                          RETURN h.name AS Name, h.tenantID AS TenantID",
-                                                          new { tenantId, topCant });
+                var result = await transaction.RunAsync(@"
+                    MATCH (h:Hashtag) where h.tenantID = $tenantId
+                    WITH h, [()-[:WITH_HASHTAG]->(h) |1] AS relationships
+                    WHERE SIZE(relationships) > 0
+                    WITH h, SIZE(relationships) AS relationshipCount
+                    ORDER BY relationshipCount DESC
+                    limit $topCant
+                    RETURN distinct h.name AS Name, relationshipCount",//COLLECT(pos.postId) AS PostIds
+                    new { tenantId, topCant });
                 List<HashtagNeo4jDto> hashtags = await result.ToListAsync(record =>
                 {
                     return new HashtagNeo4jDto
                     {
                         Name = record["Name"].As<string>(),
-                        TenantID = record["TenantID"].As<int>()
+                        TenantID = tenantId,
+                        RelationshipCount = record["relationshipCount"].As<int>()
                     };
                 });
                 return hashtags;
             });
         }
-        //top hashtag de toda la paltaforma, por ver el retorno
+        //top hashtags de toda la paltaforma
         public async Task<List<HashtagNeo4jDto>> TopHashtagAllTenant(int topCant)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
             return await session.ExecuteReadAsync(async transaction =>
             {
-                var result = await transaction.RunAsync(@"MATCH (h:Hashtag)
-                                                          WITH h, [()-[:WITH_HASHTAG]->(h) | 1] AS relationships
-                                                          WHERE SIZE(relationships) > 0
-                                                          WITH h, SIZE(relationships) AS relationshipCount
-                                                          ORDER BY relationshipCount DESC
-                                                          LIMIT $topCant
-                                                          RETURN h.name AS Name, h.tenantID AS TenantID",
-                                                          new {topCant });
+                var result = await transaction.RunAsync(@"
+                    MATCH (h:Hashtag)
+                    WITH h, [()-[:WITH_HASHTAG]->(h) | 1] AS relationships
+                    WHERE SIZE(relationships) > 0
+                    WITH h, SIZE(relationships) AS relationshipCount
+                    ORDER BY relationshipCount DESC
+                    LIMIT $topCant
+                    RETURN h.name AS Name, h.tenantID AS TenantID, relationshipCount",
+                    new {topCant });
                 List<HashtagNeo4jDto> hashtags = await result.ToListAsync(record =>
                 {
                     return new HashtagNeo4jDto
                     {
                         Name = record["Name"].As<string>(),
-                        TenantID = record["TenantID"].As<int>()
+                        TenantID = record["TenantID"].As<int>(),
+                        RelationshipCount = record["relationshipCount"].As<int>()
                     };
                 });
                 return hashtags;
