@@ -14,5 +14,6 @@ namespace MicrobUy_API.Data.Repositories
         Task<int> DeleteLike(GiveLikeNeo4jDto giveLikeNeo4JDto);
         Task<List<PostWhitMostLikeNeo4jDto>> PostWhitMostLikeAllTenant(int topCant);
         Task<List<PostWhitMostLikeNeo4jDto>> PostWhitMostLikeByTenant(int tenantId, int topCant);
+        Task<List<SuggestUserNeo4jDto>> SuggestUsersByTenant(int tenantId, int userId, int topCant);
     }
 }

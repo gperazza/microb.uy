@@ -242,5 +242,32 @@ namespace MicrobUy_API.Data.Repositories
                 return posts;
             });
         }
+        //Por continuar... Ya esta parte de la consulta en la BD
+        public async Task<List<SuggestUserNeo4jDto>> SuggestUsersByTenant(int tenantId, int userId, int topCant)
+        {
+            await using var session = _driver.AsyncSession(WithDatabase);
+            return await session.ExecuteReadAsync(async transaction =>
+            {
+                var result = await transaction.RunAsync(@"
+                    match (user1:User {userId: $userId})-[:LIKE]->(post:Post)<-[:LIKE]-(user2:User)
+                    with user1, post, user2
+                    match (post)-[:WITH_HASHTAG]->(h:Hashtag)
+                    with user1, user2, post
+                    match (user1)-[:LIVE]->(c:City)<-[:LIVE]-(user2)
+                    with user1, user2,post, c
+                    match (user1)-[:BORN]->(b:Birthday)<-[:BORN]-(user2)
+                    Return user2.userId AS UserId",
+                    new { tenantId, topCant, userId });
+                List<SuggestUserNeo4jDto> posts = await result.ToListAsync(record =>
+                {
+                    return new SuggestUserNeo4jDto
+                    {
+                        UserId = record["UserId"].As<int>(),
+                        TenantId = tenantId
+                    };
+                });
+                return posts;
+            });
+        }
     }
 }

@@ -73,5 +73,11 @@ namespace MicrobUy_API.Controllers
         {
             return _neo4jUsersRepository.PostWhitMostLikeByTenant(tenantId, topCant);
         }
+
+        [HttpGet("SuggestUsersByTenant")]
+        public Task<List<SuggestUserNeo4jDto>> SuggestUsersByTenant([Required] int tenantId, [Required] int userId, int topCant)
+        {
+            return _neo4jUsersRepository.SuggestUsersByTenant(tenantId, userId, topCant);
+        }
     }
 }
