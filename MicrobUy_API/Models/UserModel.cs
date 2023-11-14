@@ -26,7 +26,9 @@ namespace MicrobUy_API.Models
         public virtual ICollection<UserModel> Following { get; set; } = new List<UserModel>();
         [NotMapped]
         public virtual ICollection<UserModel> Followers { get; set; } = new List<UserModel>();
+        [NotMapped]
         public ICollection<UserModel> BlockUsers { get; set; } = new List<UserModel>();
+        [NotMapped]
         public ICollection<UserModel> MuteUsers { get; set; } = new List<UserModel>();
         //One to many del usuario que postea
         [NotMapped]

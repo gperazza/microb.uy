@@ -18,5 +18,13 @@ namespace MicrobUy_API.Services.AccountService
         Task<int> FollowUser(string userName, string userNameToFollow);
 
         Task<IEnumerable<FollowedUserDto>> GetFollowers(string userName);
+        
+        Task<IEnumerable<FollowedUserDto>> GetMutedUsers(string userName);
+        
+        Task<IEnumerable<FollowedUserDto>> GetBlockedUsers(string userName);
+        
+        Task<int> MuteUser(string userName, string userNameToMute);
+        
+        Task<int> BlockUser(string userName, string userNameToBlock);
     }
 }

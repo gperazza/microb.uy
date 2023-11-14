@@ -197,6 +197,42 @@ namespace MicrobUy_API.Controllers
             return Ok(result);
         }
 
+        [HttpPut("BlockUser")]
+        public async Task<IActionResult> BlockUser(string userName, string userNameToBlock)
+        {
+            IEnumerable<string> errors;
+            List<string> listOfErrors = new List<string>();
+            int result = await _accountService.BlockUser(userName, userNameToBlock);
+
+            if (result != 1)
+            {
+                listOfErrors.Add("No fue posible bloquear al usuario");
+                errors = listOfErrors.Select(x => x);
+                return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPut("MuteUser")]
+        public async Task<IActionResult> MutekUser(string userName, string userNameToFollow)
+        {
+            IEnumerable<string> errors;
+            List<string> listOfErrors = new List<string>();
+            int result = await _accountService.MuteUser(userName, userNameToFollow);
+
+            if (result != 2)
+            {
+                listOfErrors.Add("No fue posible mutear al usuario");
+                errors = listOfErrors.Select(x => x);
+                return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+
+            }
+
+            return Ok(result);
+        }
+
         [HttpGet("GetFollowedUsers")]
         public async Task<IActionResult> GetFollowedUsers(string userName)
         {
@@ -208,6 +244,22 @@ namespace MicrobUy_API.Controllers
         public async Task<IActionResult> GetFollowers(string userName)
         {
             IEnumerable<FollowedUserDto> usuarios = await _accountService.GetFollowers(userName);
+            return Ok(usuarios);
+        }
+
+
+        [HttpGet("GetBlockedUsers")]
+        public async Task<IActionResult> GetBlockedUsers(string userName)
+        {
+            IEnumerable<FollowedUserDto> usuarios = await _accountService.GetBlockedUsers(userName);
+            return Ok(usuarios);
+        }
+
+
+        [HttpGet("GetMutedUsers")]
+        public async Task<IActionResult> GetMutedUsers(string userName)
+        {
+            IEnumerable<FollowedUserDto> usuarios = await _accountService.GetMutedUsers(userName);
             return Ok(usuarios);
         }
     }

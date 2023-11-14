@@ -31,6 +31,8 @@ namespace MicrobUy_API.Data
             modelBuilder.Entity<UserModel>().HasMany(e => e.Posts).WithOne(e => e.UserOwner);
             modelBuilder.Entity<UserModel>().HasMany(e => e.Following).WithMany().UsingEntity(join => join.ToTable("UserFollowing"));
             modelBuilder.Entity<UserModel>().HasMany(e => e.Followers).WithMany().UsingEntity(join => join.ToTable("UserFollower"));
+            modelBuilder.Entity<UserModel>().HasMany(e => e.BlockUsers).WithMany().UsingEntity(join => join.ToTable("BlockedUser"));
+            modelBuilder.Entity<UserModel>().HasMany(e => e.MuteUsers).WithMany().UsingEntity(join => join.ToTable("MutedUser"));
             modelBuilder.Entity<PostModel>().OwnsOne(x => x.Hashtag);
             modelBuilder.Entity<PostModel>().HasDiscriminator<string>("Discriminator").HasValue<PostModel>("PostModel").HasValue<CommentModel>("CommentModel");
             modelBuilder.Entity<UserModel>().HasQueryFilter(mt => mt.TenantInstanceId == _tenant);

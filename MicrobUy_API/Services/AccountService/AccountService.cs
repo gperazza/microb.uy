@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
-using MicrobUy_API.Migrations.TenantAplicationDb;
 using MicrobUy_API.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace MicrobUy_API.Services.AccountService
 {
@@ -129,6 +127,58 @@ namespace MicrobUy_API.Services.AccountService
                 followers = _mapper.Map<List<UserModel>, List<FollowedUserDto>>(user.Followers.ToList());
 
             return followers;
+
+        }
+
+        public async Task<int> BlockUser(string userName, string userNameToBlock)
+        {
+            UserModel user = _context.User.FirstOrDefault(x => x.UserName == userName);
+            UserModel userToBlock = _context.User.FirstOrDefault(x => x.UserName == userNameToBlock);
+
+            if (user == null || userToBlock == null)
+                return 0;
+
+            user.BlockUsers.Add(userToBlock);
+          
+            return _context.SaveChanges();
+
+        }
+
+        public async Task<int> MuteUser(string userName, string userNameToMute)
+        {
+            UserModel user = _context.User.FirstOrDefault(x => x.UserName == userName);
+            UserModel userToMute = _context.User.FirstOrDefault(x => x.UserName == userNameToMute);
+
+            if (user == null || userToMute == null)
+                return 0;
+
+            user.BlockUsers.Add(userToMute);
+
+            return _context.SaveChanges();
+
+        }
+
+        public async Task<IEnumerable<FollowedUserDto>> GetBlockedUsers(string userName)
+        {
+            List<FollowedUserDto> blockedUsers = new List<FollowedUserDto>();
+            UserModel user = _context.User.Include(x => x.BlockUsers).FirstOrDefault(x => x.UserName == userName);
+
+            if (user != null)
+                blockedUsers = _mapper.Map<List<UserModel>, List<FollowedUserDto>>(user.BlockUsers.ToList());
+
+            return blockedUsers;
+
+        }
+
+        public async Task<IEnumerable<FollowedUserDto>> GetMutedUsers(string userName)
+        {
+            List<FollowedUserDto> mutedUsers = new List<FollowedUserDto>();
+            UserModel user = _context.User.Include(x => x.MuteUsers).FirstOrDefault(x => x.UserName == userName);
+
+            if (user != null)
+                mutedUsers = _mapper.Map<List<UserModel>, List<FollowedUserDto>>(user.MuteUsers.ToList());
+
+            return mutedUsers;
 
         }
     }
