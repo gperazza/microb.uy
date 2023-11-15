@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Dtos.Enums;
 using MicrobUy_API.Models;
-using MicrobUy_API.Tenancy;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
+
 
 namespace MicrobUy_API.Services.TenantInstanceService
 {

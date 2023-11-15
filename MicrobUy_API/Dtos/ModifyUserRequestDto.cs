@@ -13,5 +13,7 @@ namespace MicrobUy_API.Dtos
         public string Biography { get; set; }
         public string Occupation { get; set; }
         public CityModel City { get; set; }
+        public string Role { get; set; }
+
     }
 }

@@ -71,7 +71,7 @@ namespace MicrobUy_API.Services.AccountService
             if (result == 1)
             {
                 var check = _context.User.Include(b => b.City).FirstOrDefault(b => b.TenantInstanceId == _context._tenant && b.UserId == user.UserId);
-                if (check.City != user.City)
+                if (check.City.Id != user.City.Id)
                 {
                     check.City = newUser.City;
                     _context.Update(check);
@@ -83,9 +83,22 @@ namespace MicrobUy_API.Services.AccountService
                     var currentIdentityUser = _IdentityContext.Users.Where(x => x.UserName == currentUser.FirstOrDefault().UserName && x.Email == oldEmail);
                     var resultIdentity = currentIdentityUser.ExecuteUpdate(setters => setters.SetProperty(b => b.Email, user.Email)
                                                 .SetProperty(b => b.NormalizedEmail, user.Email.ToUpper()));
-                    return resultIdentity;
+                    
+                    result = resultIdentity;
                 }
-            
+
+
+                var currentUserToChangeRole = _IdentityContext.Users.Where(x => x.UserName == currentUser.FirstOrDefault().UserName);
+                
+                var userRoles = _IdentityContext.UserRoles.Where(x => x.UserId == currentUserToChangeRole.FirstOrDefault().Id);
+                var roles = _IdentityContext.Roles;
+
+                if (userRoles.FirstOrDefault().RoleId != roles.FirstOrDefault(x => x.Name == user.Role).Id)
+                {
+                    int resultRoles = userRoles.ExecuteUpdate(setters => setters.SetProperty(b => b.RoleId, roles.FirstOrDefault(x => x.Name == user.Role).Id));
+
+                    result = resultRoles;
+                }
             }
 
             return result;
