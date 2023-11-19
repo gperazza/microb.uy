@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
+using MicrobUy_API.Dtos.PostDto;
 using MicrobUy_API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -151,6 +152,17 @@ namespace MicrobUy_API.Services.AccountService
             if (user == null || userToBlock == null)
                 return 0;
 
+            if (user.Followers.Contains(userToBlock)) { 
+                
+                user.Followers.Remove(userToBlock); 
+            }
+
+            if (user.Following.Contains(userToBlock))
+            {
+
+                user.Following.Remove(userToBlock);
+            }
+
             user.BlockUsers.Add(userToBlock);
           
             return _context.SaveChanges();
@@ -193,6 +205,40 @@ namespace MicrobUy_API.Services.AccountService
 
             return mutedUsers;
 
+        }
+
+        public async Task<IEnumerable<PostDto>> GetUsersTimeLine(string userName)
+        {
+            List<PostDto> userTimeLine = new List<PostDto>();
+           
+            List<PostModel> userPosts = _context.User.Include(y => y.Posts).Where(y => y.UserName == userName).SelectMany(y => y.Posts).Where(y => !y.isSanctioned).ToList();
+
+            List<PostModel> userFollowingPosts = _context.User.Include(x => x.Following).ThenInclude(y => y.Posts).Include(x => x.MuteUsers)
+                .Where(x => x.UserName == userName).SelectMany(x => x.Following.Where(x => !x.BlockUsers.Contains(x) && !x.MuteUsers.Contains(x)))
+                .SelectMany(x => x.Posts).Where(x => !x.isSanctioned).ToList();
+
+
+            if (userFollowingPosts.Any())
+            {
+                if (userPosts.Any())
+                {
+                    userFollowingPosts.AddRange(userPosts);
+                }
+
+                userTimeLine = _mapper.Map<List<PostModel>, List<PostDto>>(userFollowingPosts);
+
+            }
+            else 
+            {
+                if (userPosts.Any()) 
+                {
+                   
+                    userTimeLine = _mapper.Map<List<PostModel>, List<PostDto>>(userPosts);
+
+                }
+            }
+                
+            return userTimeLine;
         }
     }
 }

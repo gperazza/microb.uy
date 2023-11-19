@@ -3,6 +3,7 @@ using Azure.Core;
 using Firebase.Auth;
 using FluentValidation;
 using MicrobUy_API.Dtos;
+using MicrobUy_API.Dtos.PostDto;
 using MicrobUy_API.JwtFeatures;
 using MicrobUy_API.Models;
 using MicrobUy_API.Services.AccountService;
@@ -261,6 +262,13 @@ namespace MicrobUy_API.Controllers
         {
             IEnumerable<FollowedUserDto> usuarios = await _accountService.GetMutedUsers(userName);
             return Ok(usuarios);
+        }
+
+        [HttpGet("GetUserTimeline")]
+        public async Task<IActionResult> GetUserTimeline(string userName)
+        {
+            IEnumerable<PostDto> timeline = await _accountService.GetUsersTimeLine(userName);
+            return Ok(timeline);
         }
     }
 }

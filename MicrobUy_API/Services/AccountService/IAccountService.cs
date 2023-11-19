@@ -1,4 +1,5 @@
 ﻿using MicrobUy_API.Dtos;
+using MicrobUy_API.Dtos.PostDto;
 using MicrobUy_API.Models;
 
 namespace MicrobUy_API.Services.AccountService
@@ -26,5 +27,7 @@ namespace MicrobUy_API.Services.AccountService
         Task<int> MuteUser(string userName, string userNameToMute);
         
         Task<int> BlockUser(string userName, string userNameToBlock);
+
+        Task<IEnumerable<PostDto>> GetUsersTimeLine(string userName);
     }
 }
