@@ -211,7 +211,8 @@ namespace MicrobUy_API.Services.AccountService
         {
             List<PostDto> userTimeLine = new List<PostDto>();
            
-            List<PostModel> userPosts = _context.User.Include(y => y.Posts).Where(y => y.UserName == userName).SelectMany(y => y.Posts).Where(y => !y.isSanctioned).ToList();
+            List<PostModel> userPosts = _context.User.Include(y => y.Posts).ThenInclude(y => y.UserOwner)
+                .Where(y => y.UserName == userName).SelectMany(y => y.Posts).Where(y => !y.isSanctioned).ToList();
 
             List<PostModel> userFollowingPosts = _context.User.Include(x => x.Following).ThenInclude(y => y.Posts).ThenInclude(y => y.UserOwner)
                 .ThenInclude(y => y.Likes).ThenInclude(y => y.Comments).ThenInclude(y => y.Hashtag).Include(x => x.MuteUsers)
