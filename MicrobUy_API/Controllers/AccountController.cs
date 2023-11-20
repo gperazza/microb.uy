@@ -205,7 +205,7 @@ namespace MicrobUy_API.Controllers
             List<string> listOfErrors = new List<string>();
             int result = await _accountService.BlockUser(userName, userNameToBlock);
 
-            if (result != 1)
+            if (result != 2)
             {
                 listOfErrors.Add("No fue posible bloquear al usuario");
                 errors = listOfErrors.Select(x => x);
@@ -217,13 +217,13 @@ namespace MicrobUy_API.Controllers
         }
 
         [HttpPut("MuteUser")]
-        public async Task<IActionResult> MutekUser(string userName, string userNameToFollow)
+        public async Task<IActionResult> MutekUser(string userName, string userNameToMute)
         {
             IEnumerable<string> errors;
             List<string> listOfErrors = new List<string>();
-            int result = await _accountService.MuteUser(userName, userNameToFollow);
+            int result = await _accountService.MuteUser(userName, userNameToMute);
 
-            if (result != 2)
+            if (result != 1)
             {
                 listOfErrors.Add("No fue posible mutear al usuario");
                 errors = listOfErrors.Select(x => x);

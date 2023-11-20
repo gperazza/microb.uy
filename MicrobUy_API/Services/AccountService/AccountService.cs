@@ -4,6 +4,7 @@ using MicrobUy_API.Dtos;
 using MicrobUy_API.Dtos.PostDto;
 using MicrobUy_API.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace MicrobUy_API.Services.AccountService
 {
@@ -146,7 +147,7 @@ namespace MicrobUy_API.Services.AccountService
 
         public async Task<int> BlockUser(string userName, string userNameToBlock)
         {
-            UserModel user = _context.User.FirstOrDefault(x => x.UserName == userName);
+            UserModel user = _context.User.Include(x => x.Following).Include(x => x.Followers).FirstOrDefault(x => x.UserName == userName);
             UserModel userToBlock = _context.User.FirstOrDefault(x => x.UserName == userNameToBlock);
 
             if (user == null || userToBlock == null)
@@ -177,7 +178,7 @@ namespace MicrobUy_API.Services.AccountService
             if (user == null || userToMute == null)
                 return 0;
 
-            user.BlockUsers.Add(userToMute);
+            user.MuteUsers.Add(userToMute);
 
             return _context.SaveChanges();
 
@@ -214,11 +215,10 @@ namespace MicrobUy_API.Services.AccountService
             List<PostModel> userPosts = _context.User.Include(y => y.Posts).ThenInclude(y => y.UserOwner)
                 .Where(y => y.UserName == userName).SelectMany(y => y.Posts).Where(y => !y.isSanctioned).ToList();
 
-            List<PostModel> userFollowingPosts = _context.User.Include(x => x.Following).ThenInclude(y => y.Posts).ThenInclude(y => y.UserOwner)
-                .ThenInclude(y => y.Likes).ThenInclude(y => y.Comments).ThenInclude(y => y.Hashtag).Include(x => x.MuteUsers)
-                .Where(x => x.UserName == userName).SelectMany(x => x.Following.Where(x => !x.BlockUsers.Contains(x) && !x.MuteUsers.Contains(x)))
+            List<PostModel> userFollowingPosts = _context.User.Include(x => x.MuteUsers).Include(x => x.Following).ThenInclude(y => y.Posts).ThenInclude(y => y.UserOwner)
+                .ThenInclude(y => y.Likes).ThenInclude(y => y.Comments).ThenInclude(y => y.Hashtag)
+                .Where(x => x.UserName == userName).SelectMany(x => x.Following.Where(y => !x.MuteUsers.Contains(y))) 
                 .SelectMany(x => x.Posts).Where(x => !x.isSanctioned).ToList();
-
 
             if (userFollowingPosts.Any())
             {
@@ -230,16 +230,16 @@ namespace MicrobUy_API.Services.AccountService
                 userTimeLine = _mapper.Map<List<PostModel>, List<PostDto>>(userFollowingPosts);
 
             }
-            else 
+            else
             {
-                if (userPosts.Any()) 
+                if (userPosts.Any())
                 {
-                   
+
                     userTimeLine = _mapper.Map<List<PostModel>, List<PostDto>>(userPosts);
 
                 }
             }
-                
+
             return userTimeLine;
         }
     }
