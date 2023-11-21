@@ -36,6 +36,7 @@ namespace MicrobUy_API.Services.PostService
 
             newPost.UserOwner = userExist;
             newPost.Created = DateTime.Now;
+            newPost.Active = true;
             await _context.AddAsync(newPost);
             _context.SaveChanges();
 
@@ -48,6 +49,7 @@ namespace MicrobUy_API.Services.PostService
             PostModel aux_post = _context.Post.FirstOrDefault(x => x.PostId == postId);
             UserModel userExist = _context.User.Where(x => x.UserName == userName).FirstOrDefault();
 
+            if (aux_post.Active == false) return null;
             if (userExist == null) return null;
             if (aux_post == null) return null;
 
@@ -60,9 +62,18 @@ namespace MicrobUy_API.Services.PostService
             return newPost;
         }
 
+        public async Task<bool> DeletePostById(int postId)
+        {
+            PostModel aux_post = _context.Post.FirstOrDefault(x => x.PostId == postId);
+            if (aux_post == null) return false;
+            aux_post.Active = false;
+            _context.SaveChanges();
+            return true;
+        }
+
         public async Task<PostDto> GetPostById(int postId)
         {
-            var aux_post = _context.Post.Where(x => x.PostId == postId).Include(x => x.Comments).Include(x => x.UserOwner)
+            var aux_post = _context.Post.Where(x => x.PostId == postId && (x.Active)).Include(x => x.Comments).Include(x => x.UserOwner)
                .Include(x => x.Likes).Include(x => x.Hashtag).Include(X => X.Likes).FirstOrDefault();
 
             var postDto = _mapper.Map<PostModel, PostDto>(aux_post);
@@ -71,7 +82,7 @@ namespace MicrobUy_API.Services.PostService
 
         public async Task<IEnumerable<PostDto>> GetPostByUser(string userName)
         {
-            var aux_post = _context.Post.Where(x => x.UserOwner.UserName == userName && !(x is CommentModel)).Include(x => x.Comments).Include(x => x.UserOwner)
+            var aux_post = _context.Post.Where(x => x.UserOwner.UserName == userName && !(x is CommentModel) && (x.Active)).Include(x => x.Comments).Include(x => x.UserOwner)
                .Include(x => x.Likes).Include(x => x.Hashtag).Include(X=> X.Likes).ToList();
 
             var postDto = _mapper.Map<List<PostModel>, List<PostDto>>(aux_post);
@@ -83,6 +94,7 @@ namespace MicrobUy_API.Services.PostService
             PostModel aux_post = _context.Post.FirstOrDefault(x => x.PostId == postId);
             UserModel aux_user = _context.User.Where(x => x.UserName == userName).FirstOrDefault();
 
+            if (aux_post.Active == false) return null;
             if (aux_user == null) return null;
             if (aux_post == null) return null;
 

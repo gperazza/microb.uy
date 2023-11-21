@@ -94,5 +94,12 @@ namespace MicrobUy_API.Controllers
             var result = await _postService.GetPostById(postId);
             return Ok(result);
         }
+
+        [HttpPut("DeletePostById")]
+        public async Task<IActionResult> DeletePostById(int postId)
+        {
+            var result = await _postService.DeletePostById(postId);
+            return Ok(result);
+        }
     }
 }

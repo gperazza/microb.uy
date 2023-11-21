@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MicrobUy_API.Dtos.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Metadata;
 
@@ -16,6 +17,7 @@ namespace MicrobUy_API.Models
         public UserModel UserOwner { get; set; } = null!;
         public bool isSanctioned { get; set; }
         public DateTime Created { get; set; }
+        public bool Active { get; set; }
         //Respuestas a un post
         public ICollection<CommentModel> Comments { get; set; } = new List<CommentModel>();
         //Personas que le dieron me gusta al post
