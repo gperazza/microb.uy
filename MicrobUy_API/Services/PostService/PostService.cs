@@ -60,6 +60,15 @@ namespace MicrobUy_API.Services.PostService
             return newPost;
         }
 
+        public async Task<PostDto> GetPostById(int postId)
+        {
+            var aux_post = _context.Post.Where(x => x.PostId == postId).Include(x => x.Comments).Include(x => x.UserOwner)
+               .Include(x => x.Likes).Include(x => x.Hashtag).Include(X => X.Likes).FirstOrDefault();
+
+            var postDto = _mapper.Map<PostModel, PostDto>(aux_post);
+            return postDto;
+        }
+
         public async Task<IEnumerable<PostDto>> GetPostByUser(string userName)
         {
             var aux_post = _context.Post.Where(x => x.UserOwner.UserName == userName && !(x is CommentModel)).Include(x => x.Comments).Include(x => x.UserOwner)

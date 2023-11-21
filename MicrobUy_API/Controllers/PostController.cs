@@ -87,5 +87,12 @@ namespace MicrobUy_API.Controllers
             return Ok(result);
 
         }
+
+        [HttpGet("GetPostById")]
+        public async Task<IActionResult> GetPostById(int postId)
+        {
+            var result = await _postService.GetPostById(postId);
+            return Ok(result);
+        }
     }
 }
