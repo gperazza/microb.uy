@@ -29,6 +29,8 @@ namespace MicrobUy_API.Models
         [NotMapped]
         public ICollection<UserModel> BlockUsers { get; set; } = new List<UserModel>();
         [NotMapped]
+        public ICollection<PostModel> Reports { get; set; } = new List<PostModel>();
+        [NotMapped]
         public ICollection<UserModel> MuteUsers { get; set; } = new List<UserModel>();
         //One to many del usuario que postea
         [NotMapped]

@@ -1,0 +1,8 @@
+﻿namespace MicrobUy_API.Dtos.PostDto
+{
+    public class UserReportPost
+    {
+        public int Id { get; set; }
+        public string UserName { get; set; }
+    }
+}

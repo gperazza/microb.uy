@@ -37,6 +37,9 @@ namespace MicrobUy_API.Services.PostService
             newPost.UserOwner = userExist;
             newPost.Created = DateTime.Now;
             newPost.Active = true;
+            newPost.isSanctioned = false;
+            newPost.PendingToReview = false;
+            newPost.alreadyModerated = false;
             await _context.AddAsync(newPost);
             _context.SaveChanges();
 
@@ -55,6 +58,10 @@ namespace MicrobUy_API.Services.PostService
 
             newPost.UserOwner = userExist;
             newPost.Created = DateTime.Now;
+            newPost.isSanctioned = false;
+            newPost.PendingToReview = false;
+            newPost.Active = true;
+            newPost.alreadyModerated = false;
 
             aux_post.Comments.Add(newPost);
             _context.SaveChanges();
@@ -73,7 +80,7 @@ namespace MicrobUy_API.Services.PostService
 
         public async Task<PostDto> GetPostById(int postId)
         {
-            var aux_post = _context.Post.Where(x => x.PostId == postId && (x.Active)).Include(x => x.Comments).Include(x => x.UserOwner)
+            var aux_post = _context.Post.Where(x => x.PostId == postId && (x.Active == true) && (x.isSanctioned == false)).Include(x => x.Comments).Include(x => x.UserOwner)
                .Include(x => x.Likes).Include(x => x.Hashtag).Include(X => X.Likes).FirstOrDefault();
 
             var postDto = _mapper.Map<PostModel, PostDto>(aux_post);
@@ -82,7 +89,7 @@ namespace MicrobUy_API.Services.PostService
 
         public async Task<IEnumerable<PostDto>> GetPostByUser(string userName)
         {
-            var aux_post = _context.Post.Where(x => x.UserOwner.UserName == userName && !(x is CommentModel) && (x.Active)).Include(x => x.Comments).Include(x => x.UserOwner)
+            var aux_post = _context.Post.Where(x => x.UserOwner.UserName == userName && !(x is CommentModel) && (x.Active == true) && (x.isSanctioned == false)).Include(x => x.Comments).Include(x => x.UserOwner)
                .Include(x => x.Likes).Include(x => x.Hashtag).Include(X=> X.Likes).ToList();
 
             var postDto = _mapper.Map<List<PostModel>, List<PostDto>>(aux_post);
@@ -104,6 +111,47 @@ namespace MicrobUy_API.Services.PostService
             return aux_post;
 
         }
+        // ------------------------- FUNCIONALIDADES PARA REPORTAR Y MODERAR REPORTES ------------------------- //
+        public async Task<bool> ReportPostById(int postId, string userName)
+        {
+            PostModel aux_post = _context.Post.FirstOrDefault(x => x.PostId == postId);
+            UserModel aux_user = _context.User.Where(x => x.UserName == userName).FirstOrDefault();
+            if (aux_post == null || aux_user == null) return false;
+            aux_post.Reporters.Add(aux_user);
+            if (aux_post.alreadyModerated == false) aux_post.PendingToReview = true;
+            _context.SaveChanges();
+            return true;
+        }
+
+        public async Task<IEnumerable<PostDto>> GetReportedPosts()
+        {
+            var posts = _context.Post.Where(x => x.PendingToReview == true && (x.Active == true) && (x.isSanctioned == false) && (x.alreadyModerated == false)).ToList();
+            var postDto = _mapper.Map<List<PostModel>, List<PostDto>>(posts);
+            return postDto;
+        }
+
+        public async Task<bool> PunishPost(int postId)
+        {
+            PostModel aux_post = _context.Post.FirstOrDefault(x => x.PostId == postId);
+            if (aux_post == null) return false;
+            aux_post.isSanctioned = true;
+            aux_post.alreadyModerated = true;
+            _context.SaveChanges();
+            return true;
+        }
+
+        public async Task<bool> DismissReportedPost(int postId)
+        {
+            PostModel aux_post = _context.Post.FirstOrDefault(x => x.PostId == postId);
+            if (aux_post == null) return false;
+            aux_post.isSanctioned = false;
+            aux_post.PendingToReview = false;
+            aux_post.alreadyModerated = true;
+            _context.SaveChanges();
+            return true;
+        }
     }
 
 }
+
+

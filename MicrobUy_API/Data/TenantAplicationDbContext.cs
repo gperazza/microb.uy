@@ -27,6 +27,7 @@ namespace MicrobUy_API.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserModel>().HasMany(e => e.Likes).WithMany(e => e.Likes).UsingEntity("PostLikes");
+            modelBuilder.Entity<UserModel>().HasMany(e => e.Reports).WithMany(e => e.Reporters).UsingEntity("Reporters");
             modelBuilder.Entity<UserModel>().HasMany(e => e.AdministratedInstances).WithMany(e => e.InstanceAdministrators).UsingEntity("InstanceAdministrators");
             modelBuilder.Entity<UserModel>().HasMany(e => e.Posts).WithOne(e => e.UserOwner);
             modelBuilder.Entity<UserModel>().HasMany(e => e.Following).WithMany().UsingEntity(join => join.ToTable("UserFollowing"));

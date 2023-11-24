@@ -13,6 +13,9 @@ namespace MicrobUy_API.Dtos.PostDto
         public DateTime Created { get; set; }
         public bool isSanctioned { get; set; }
         public bool Active { get; set; }
+
+        //Personas que reportaron un post
+        public ICollection<UserReportPost> Reporters { get; set; }
         //Respuestas a un post
         public ICollection<PostDto> Comments { get; set; } = new List<PostDto>();
         //Personas que le dieron me gusta al post

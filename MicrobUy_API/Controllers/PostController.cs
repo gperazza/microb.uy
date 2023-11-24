@@ -127,5 +127,36 @@ namespace MicrobUy_API.Controllers
             var result = await _postService.DeletePostById(postId);
             return Ok(result);
         }
+
+        // ------------------------- FUNCIONALIDADES PARA REPORTAR Y MODERAR REPORTES ------------------------- //
+
+        [HttpPut("ReportPost")]
+        public async Task<IActionResult> ReportPostById(int postId, string userName)
+        {
+            var result = await _postService.ReportPostById(postId, userName);
+            return Ok(result);
+        }
+
+        [HttpGet("GetReportedPost")]
+        public async Task<IActionResult> GetReportedPosts()
+        {
+            var result = await _postService.GetReportedPosts();
+            return Ok(result);
+        }
+
+        [HttpPut("PunishPost")]
+        public async Task<IActionResult> PunishPost(int postId)
+        {
+            var result = await _postService.PunishPost(postId);
+            return Ok(result);
+        }
+
+        [HttpPut("DismissReportedPost")]
+        public async Task<IActionResult> DismissReportedPost(int postId)
+        {
+            var result = await _postService.DismissReportedPost(postId);
+            return Ok(result);
+        }
+
     }
 }

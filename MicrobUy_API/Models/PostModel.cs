@@ -1,4 +1,5 @@
 ﻿using MicrobUy_API.Dtos.Enums;
+using MicrobUy_API.Dtos.PostDto;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Metadata;
@@ -18,6 +19,11 @@ namespace MicrobUy_API.Models
         public bool isSanctioned { get; set; }
         public DateTime Created { get; set; }
         public bool Active { get; set; }
+        public bool PendingToReview { get; set; }
+
+        public bool alreadyModerated { get; set; }
+        //Personas que reportaron un post
+        public ICollection<UserModel> Reporters { get; set; } = new List<UserModel>();
         //Respuestas a un post
         public ICollection<CommentModel> Comments { get; set; } = new List<CommentModel>();
         //Personas que le dieron me gusta al post
