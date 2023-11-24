@@ -19,6 +19,11 @@ namespace MicrobUy_API.Controllers
             _generalDataService = generalDataService;
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="tematica"></param>
+        /// <returns></returns>
         [HttpPost("CreateTematicas")]
         public async Task<IActionResult> CreateTematicas(CreateTematicaRequestDto tematica)
         {
@@ -26,6 +31,10 @@ namespace MicrobUy_API.Controllers
             return Created("Tematica crerated", newTematica);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("GetTematicas")]
         public async Task<IActionResult> GetTematicas()
         {
@@ -33,6 +42,11 @@ namespace MicrobUy_API.Controllers
             return Ok(tematicas);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="tematicaId"></param>
+        /// <returns></returns>
         [HttpGet("GetTematicasById")]
         public async Task<IActionResult> GetTematicasById(int tematicaId)
         {
@@ -40,6 +54,10 @@ namespace MicrobUy_API.Controllers
             return Ok(tematica);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("GetCities")]
         public async Task<IActionResult> GetCities()
         {

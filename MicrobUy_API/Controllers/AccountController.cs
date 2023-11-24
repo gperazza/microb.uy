@@ -1,19 +1,18 @@
 ﻿using AutoMapper;
-using Azure.Core;
-using Firebase.Auth;
 using FluentValidation;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Dtos.PostDto;
 using MicrobUy_API.JwtFeatures;
 using MicrobUy_API.Models;
+using MicrobUy_API.Paging;
 using MicrobUy_API.Services.AccountService;
 using MicrobUy_API.Services.TenantInstanceService;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace MicrobUy_API.Controllers
 {
@@ -38,6 +37,11 @@ namespace MicrobUy_API.Controllers
             _validator = validator;
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="userRegistration"></param>
+        /// <returns></returns>
         [HttpPost("Registration")]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationRequestDto userRegistration)
         {
@@ -68,14 +72,14 @@ namespace MicrobUy_API.Controllers
                 user.UserName = user.UserName + "@" + instance.Dominio;
                 userRegistration.Username = user.UserName;
             }
-            else 
-            { 
+            else
+            {
                 user.UserName = user.UserName + "@" + "microbuy";
                 userRegistration.Username = user.UserName;
             }
 
             var res = await _validator.ValidateAsync(userRegistration);
-           
+
             if (res.IsValid)
             {
                 var result = await _userManager.CreateAsync(user, userRegistration.Password);
@@ -114,6 +118,11 @@ namespace MicrobUy_API.Controllers
             return BadRequest(res.Errors);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="userForAuthentication"></param>
+        /// <returns></returns>
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserAuthenticationRequestDto userForAuthentication)
         {
@@ -127,6 +136,10 @@ namespace MicrobUy_API.Controllers
             return Ok(new UserAuthenticationResponseDto { IsAuthSuccessful = true, Token = token });
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <returns></returns>
         [HttpPost("LoginSocialMedia")]
         public async Task<IActionResult> LoginSocialMedia()
         {
@@ -147,14 +160,30 @@ namespace MicrobUy_API.Controllers
             return Ok(new UserAuthenticationResponseDto { IsAuthSuccessful = true, Token = token });
         }
 
-
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="params"></param>
+        /// <returns></returns>
         [HttpGet("GetUsersByInstance")]
-        public async Task<IActionResult> GetUsersByInstance()
+        public async Task<IActionResult> GetUsersByInstance([FromQuery] PaginationParams @params)
         {
             IEnumerable<UserModel> usuarios = await _accountService.GetUsuarioByInstance();
-            return Ok(usuarios);
+
+            var paginationMetadata = new PaginationMetadata(usuarios.Count(), @params.Page, @params.ItemsPerPage);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+            var items = usuarios.Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                       .Take(@params.ItemsPerPage)
+                                       .ToList();
+            return Ok(items);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         [HttpGet("GetUser")]
         public async Task<IActionResult> GetUser([Required] string userName)
         {
@@ -162,13 +191,18 @@ namespace MicrobUy_API.Controllers
             return Ok(user);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPut("ModifyUser")]
         public async Task<IActionResult> ModifyUser([FromBody] ModifyUserRequestDto user)
         {
             IEnumerable<string> errors;
             List<string> listOfErrors = new List<string>();
             var result = await _accountService.ModifyUser(user);
-            
+
             if (result != 1)
             {
                 listOfErrors.Add("No fue posible modificar el usario");
@@ -179,7 +213,12 @@ namespace MicrobUy_API.Controllers
             return Ok(result);
         }
 
-
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="userNameToFollow"></param>
+        /// <returns></returns>
         [HttpPut("FollowUser")]
         public async Task<IActionResult> FollowUser(string userName, string userNameToFollow)
         {
@@ -194,10 +233,16 @@ namespace MicrobUy_API.Controllers
                 return BadRequest(new UserRegistrationResponseDto { Errors = errors });
 
             }
-           
+
             return Ok(result);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="userNameToBlock"></param>
+        /// <returns></returns>
         [HttpPut("BlockUser")]
         public async Task<IActionResult> BlockUser(string userName, string userNameToBlock)
         {
@@ -216,6 +261,12 @@ namespace MicrobUy_API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="userNameToMute"></param>
+        /// <returns></returns>
         [HttpPut("MuteUser")]
         public async Task<IActionResult> MutekUser(string userName, string userNameToMute)
         {
@@ -234,41 +285,152 @@ namespace MicrobUy_API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="params"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         [HttpGet("GetFollowedUsers")]
-        public async Task<IActionResult> GetFollowedUsers(string userName)
+        public async Task<IActionResult> GetFollowedUsers([FromQuery] PaginationParams @params, string userName)
         {
             IEnumerable<FollowedUserDto> usuarios = await _accountService.GetFollowedUsers(userName);
-            return Ok(usuarios);
+
+            var paginationMetadata = new PaginationMetadata(usuarios.Count(), @params.Page, @params.ItemsPerPage);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+            var items = usuarios.Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                       .Take(@params.ItemsPerPage)
+                                       .ToList();
+
+            return Ok(items);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="params"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         [HttpGet("GetFollowers")]
-        public async Task<IActionResult> GetFollowers(string userName)
+        public async Task<IActionResult> GetFollowers([FromQuery] PaginationParams @params, string userName)
         {
             IEnumerable<FollowedUserDto> usuarios = await _accountService.GetFollowers(userName);
-            return Ok(usuarios);
+
+            var paginationMetadata = new PaginationMetadata(usuarios.Count(), @params.Page, @params.ItemsPerPage);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+            var items = usuarios.Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                       .Take(@params.ItemsPerPage)
+                                       .ToList();
+
+            return Ok(items);
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="params"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         [HttpGet("GetBlockedUsers")]
-        public async Task<IActionResult> GetBlockedUsers(string userName)
+        public async Task<IActionResult> GetBlockedUsers([FromQuery] PaginationParams @params, string userName)
         {
             IEnumerable<FollowedUserDto> usuarios = await _accountService.GetBlockedUsers(userName);
-            return Ok(usuarios);
+
+            var paginationMetadata = new PaginationMetadata(usuarios.Count(), @params.Page, @params.ItemsPerPage);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+            var items = usuarios.Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                       .Take(@params.ItemsPerPage)
+                                       .ToList();
+
+            return Ok(items);
         }
 
-
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="params"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         [HttpGet("GetMutedUsers")]
-        public async Task<IActionResult> GetMutedUsers(string userName)
+        public async Task<IActionResult> GetMutedUsers([FromQuery] PaginationParams @params, string userName)
         {
             IEnumerable<FollowedUserDto> usuarios = await _accountService.GetMutedUsers(userName);
-            return Ok(usuarios);
+
+            var paginationMetadata = new PaginationMetadata(usuarios.Count(), @params.Page, @params.ItemsPerPage);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+            var items = usuarios.Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                       .Take(@params.ItemsPerPage)
+                                       .ToList();
+
+            return Ok(items);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="params"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         [HttpGet("GetUserTimeline")]
-        public async Task<IActionResult> GetUserTimeline(string userName)
+        public async Task<IActionResult> GetUserTimeline([FromQuery] PaginationParams @params, string userName)
         {
             IEnumerable<PostDto> timeline = await _accountService.GetUsersTimeLine(userName);
-            return Ok(timeline);
+
+            var paginationMetadata = new PaginationMetadata(timeline.Count(), @params.Page, @params.ItemsPerPage);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+            var items = timeline.Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                       .Take(@params.ItemsPerPage)
+                                       .ToList();
+            return Ok(items);
+        }
+
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        [HttpPut("SancionateUser")]
+        public async Task<IActionResult> SancionateUser(string userName)
+        {
+            IEnumerable<string> errors;
+            List<string> listOfErrors = new List<string>();
+            int result = await _accountService.SancionateUser(userName);
+
+            if (result != 1)
+            {
+                listOfErrors.Add("No fue posible sancionar al usuario");
+                errors = listOfErrors.Select(x => x);
+                return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="params"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        [HttpGet("GetSanctionedUsers")]
+        public async Task<IActionResult> GetSanctionedUsers([FromQuery] PaginationParams @params, string userName)
+        {
+            IEnumerable<FollowedUserDto> sancionatedUsers = await _accountService.GetSancionatedUsers();
+
+            var paginationMetadata = new PaginationMetadata(sancionatedUsers.Count(), @params.Page, @params.ItemsPerPage);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+            var items = sancionatedUsers.Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                       .Take(@params.ItemsPerPage)
+                                       .ToList();
+            return Ok(items);
         }
     }
 }

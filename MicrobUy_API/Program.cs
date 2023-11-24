@@ -15,13 +15,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using MicrobUy_API.Data.SeedData;
-using Google;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using MicrobUy_API.Services.GeneralDataService;
-using System;
 using Neo4j.Driver;
 using MicrobUy_API.Data.Repositories;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,7 +67,19 @@ builder.Services.AddAuthentication(opt =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "MicrobUY API",
+        Version = "v1",
+        Description = "Esta API sirve las funcionalidades de la Web MicrobUY y de la aplicación Mobile"
+    });
+
+    //Set the comments path for the Swagger JSON and UI
+    string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));
+});
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddDbContext<TenantAplicationDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
@@ -118,6 +128,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicrobUY v1"));
 }
 
 using (var scope = app.Services.CreateScope())

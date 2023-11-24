@@ -242,5 +242,30 @@ namespace MicrobUy_API.Services.AccountService
 
             return userTimeLine;
         }
+
+        public async Task<int> SancionateUser(string userName)
+        {
+            UserModel user = _context.User.FirstOrDefault(x => x.UserName == userName);
+
+            if (user == null)
+                return 0;
+
+            user.IsSanctioned = true;
+
+            return _context.SaveChanges();
+
+        }
+
+        public async Task<IEnumerable<FollowedUserDto>> GetSancionatedUsers()
+        {
+            List<FollowedUserDto> sacionatedUsers = new List<FollowedUserDto>();
+            List<UserModel> user = _context.User.Where(x => x.IsSanctioned).ToList();
+
+            if (user != null)
+                sacionatedUsers = _mapper.Map<List<UserModel>, List<FollowedUserDto>>(user);
+
+            return sacionatedUsers;
+
+        }
     }
 }

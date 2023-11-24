@@ -1,8 +1,10 @@
 using FluentValidation;
 using FluentValidation.Results;
 using MicrobUy_API.Dtos;
+using MicrobUy_API.Paging;
 using MicrobUy_API.Services.TenantInstanceService;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace MicrobUy_API.Controllers
 {
@@ -24,10 +26,19 @@ namespace MicrobUy_API.Controllers
         /// </summary>
         /// <returns>Retorna una lista de todas las instancias existentes</returns>
         [HttpGet("GetActiveInstances")]
-        public async Task<IActionResult> GetAllActiveInstancesAsync()
+        public async Task<IActionResult> GetAllActiveInstancesAsync([FromQuery] PaginationParams @params)
         {
             var instances = await _tenantInstanceService.GetAllActiveInstances();
-            return Ok(instances);
+
+
+            var paginationMetadata = new PaginationMetadata(instances.Count(), @params.Page, @params.ItemsPerPage);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+            var items = instances.Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                       .Take(@params.ItemsPerPage)
+                                       .ToList();
+
+            return Ok(items);
         }
 
         /// <summary>

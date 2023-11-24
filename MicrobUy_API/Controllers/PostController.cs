@@ -1,17 +1,9 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using FluentValidation;
-using FluentValidation.Results;
 using MicrobUy_API.Dtos.PostDto;
-using MicrobUy_API.JwtFeatures;
-using MicrobUy_API.Models;
-using MicrobUy_API.Services.AccountService;
 using MicrobUy_API.Services.PostService;
-using MicrobUy_API.Services.TenantInstanceService;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using System.ComponentModel.DataAnnotations;
+
 
 namespace MicrobUy_API.Controllers
 {
@@ -27,6 +19,12 @@ namespace MicrobUy_API.Controllers
             _postService = postService;
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="post"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         [HttpPost("CreatePost")]
         public async Task<IActionResult> CreatePostAsync([FromBody] CreatePostDto post, string userName)
         {
@@ -47,6 +45,13 @@ namespace MicrobUy_API.Controllers
             //return BadRequest(res.Errors);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <param name="postComment"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         [HttpPost("CreateComment")]
         public async Task<IActionResult> CommentAsync(int postId, [FromBody] CreatePostDto postComment, string userName)
         {
@@ -64,6 +69,11 @@ namespace MicrobUy_API.Controllers
         
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         [HttpGet("GetPostByUser")]
         public async Task<IActionResult> GetPostByUser(String userName)
         {
@@ -71,6 +81,12 @@ namespace MicrobUy_API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         [HttpPost("AddLikeToPost")]
         public async Task<IActionResult> LikeAsync(int postId, string userName)
         {
@@ -88,6 +104,11 @@ namespace MicrobUy_API.Controllers
 
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
         [HttpGet("GetPostById")]
         public async Task<IActionResult> GetPostById(int postId)
         {
@@ -95,6 +116,11 @@ namespace MicrobUy_API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
         [HttpPut("DeletePostById")]
         public async Task<IActionResult> DeletePostById(int postId)
         {

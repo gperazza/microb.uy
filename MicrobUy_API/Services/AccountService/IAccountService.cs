@@ -29,5 +29,9 @@ namespace MicrobUy_API.Services.AccountService
         Task<int> BlockUser(string userName, string userNameToBlock);
 
         Task<IEnumerable<PostDto>> GetUsersTimeLine(string userName);
+
+        Task<IEnumerable<FollowedUserDto>> GetSancionatedUsers();
+
+        Task<int> SancionateUser(string userName);
     }
 }
