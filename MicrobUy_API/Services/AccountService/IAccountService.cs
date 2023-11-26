@@ -8,7 +8,7 @@ namespace MicrobUy_API.Services.AccountService
     {
         Task<UserModel> UserRegistration(UserRegistrationRequestDto request);
 
-        Task<IEnumerable<UserModel>> GetUsuarioByInstance();
+        Task<IEnumerable<ResponseUserDto>> GetUsuarioByInstance();
 
         Task<UserModel> GetUser(string userName);
 

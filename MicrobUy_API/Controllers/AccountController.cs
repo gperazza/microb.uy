@@ -168,7 +168,7 @@ namespace MicrobUy_API.Controllers
         [HttpGet("GetUsersByInstance")]
         public async Task<IActionResult> GetUsersByInstance([FromQuery] PaginationParams @params)
         {
-            IEnumerable<UserModel> usuarios = await _accountService.GetUsuarioByInstance();
+            IEnumerable<ResponseUserDto> usuarios = await _accountService.GetUsuarioByInstance();
 
             var paginationMetadata = new PaginationMetadata(usuarios.Count(), @params.Page, @params.ItemsPerPage);
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
@@ -387,7 +387,8 @@ namespace MicrobUy_API.Controllers
             var items = timeline.Skip((@params.Page - 1) * @params.ItemsPerPage)
                                        .Take(@params.ItemsPerPage)
                                        .ToList();
-            return Ok(items);
+            
+            return Ok(items.OrderByDescending(x => x.Created));
         }
 
         /// <summary>

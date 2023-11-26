@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Firebase.Auth;
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Dtos.PostDto;
@@ -32,13 +33,17 @@ namespace MicrobUy_API.Services.AccountService
             return newUser;
         }
 
-        public async Task<IEnumerable<UserModel>> GetUsuarioByInstance()
+        public async Task<IEnumerable<ResponseUserDto>> GetUsuarioByInstance()
         {
-            return _context.User.Where(x => !x.IsSanctioned)
-                .Include(x => x.AdministratedInstances)
-                .Include(x => x.Posts)
-                .Include(x => x.Likes)
+            List<ResponseUserDto> usersDto = new List<ResponseUserDto>();
+            var users = _context.User.Where(x => !x.IsSanctioned)
                 .Include(x => x.City).ToList();
+
+            if (users.Any())
+                usersDto = _mapper.Map<List<UserModel>, List<ResponseUserDto>>(users);
+
+            return usersDto;
+
         }
 
         public async Task<UserModel> GetUser(string userName)
