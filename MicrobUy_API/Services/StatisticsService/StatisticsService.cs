@@ -19,14 +19,12 @@ namespace MicrobUy_API.Services.StatisticsService
         {
             int CantUserTotal = _context.User.Count();
 
-            // Obtener la fecha del primer día del mes actual
             DateTime firstDayOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
             // Obtener la cantidad de usuarios creados este mes
             int CantUserThisMonth = _context.User
                 .Count(u => u.CreationDate >= firstDayOfMonth && u.CreationDate <= DateTime.Now);
 
-            // Calcular el porcentaje
             int percentageActualMonth = CantUserTotal == 0 ? 0 : CantUserThisMonth * 100 / CantUserTotal;
 
             TotalAndPercentDto userStatics = new TotalAndPercentDto(CantUserTotal, percentageActualMonth);
@@ -46,7 +44,6 @@ namespace MicrobUy_API.Services.StatisticsService
 
             int percentageVsLastMonth = cantUsersLastMonth == 0 ? 0 : (cantUsersThisMonth - cantUsersLastMonth) * 100 / cantUsersLastMonth;
 
-            // Crear el objeto TotalAndPercentDto
             TotalAndPercentDto userStatics = new TotalAndPercentDto(cantUsersThisMonth, percentageVsLastMonth);
             return userStatics;
         }
