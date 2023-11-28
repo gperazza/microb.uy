@@ -20,6 +20,8 @@ using Neo4j.Driver;
 using MicrobUy_API.Data.Repositories;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using MicrobUy_API.Controllers;
+using MicrobUy_API.Services.StatisticsService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,6 +95,7 @@ builder.Services.AddScoped<ITenantInstance, TenantInstance>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<INeo4jUsersRepository, Neo4jUsersRepository>();//neo4j
 builder.Services.AddScoped<IGeneralDataService, GeneralDataService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<IValidator<CreateInstanceRequestDto>, CreateInstanceRequestValidator>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateInstanceRequestValidator>();

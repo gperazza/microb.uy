@@ -20,7 +20,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Crea un usuario, en la base de datos Neo4j
         /// </summary>
         /// <param name="createUserNeo4JDto"></param>
         /// <returns></returns>
@@ -32,7 +32,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Crea un post y lo relaciona con su creador, en la base de datos Neo4j
         /// </summary>
         /// <param name="crearPostNeo4JDto"></param>
         /// <returns></returns>
@@ -43,7 +43,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Actualiza los datos del usuario, en la base de datos Neo4j
         /// </summary>
         /// <param name="createUserNeo4JDto"></param>
         /// <returns></returns>
@@ -54,7 +54,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Crea una relacion entre usuario y post llamada like
         /// </summary>
         /// <param name="giveLikeNeo4JDto"></param>
         /// <returns></returns>
@@ -65,7 +65,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Borra la relacion entre un usuario y un post llamada like
         /// </summary>
         /// <param name="giveLikeNeo4JDto"></param>
         /// <returns></returns>
@@ -76,7 +76,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene el top n Hasthag con mas relaciones en el tenan id pasado como parametro
         /// </summary>
         /// <param name="tenantId"></param>
         /// <param name="topCant"></param>
@@ -88,7 +88,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene el top n Hasthag con mas relaciones en todos los tenant
         /// </summary>
         /// <param name="topCant"></param>
         /// <returns></returns>
@@ -99,7 +99,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene el top n Post con mas relaciones de tipo like en todos los tenant
         /// </summary>
         /// <param name="topCant"></param>
         /// <returns></returns>
@@ -110,7 +110,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene el top n Post con mas relaciones de tipo like en el tenan id pasado como parametro
         /// </summary>
         /// <param name="tenantId"></param>
         /// <param name="topCant"></param>
@@ -122,7 +122,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Devuelve una lista de n usuarios con mas posibilidad de relacionarse con el userid pasado
         /// </summary>
         /// <param name="tenantId"></param>
         /// <param name="userId"></param>
