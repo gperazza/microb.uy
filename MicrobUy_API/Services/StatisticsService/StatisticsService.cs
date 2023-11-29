@@ -2,6 +2,7 @@
 using MicrobUy_API.Data;
 using MicrobUy_API.Dtos.StatisticsDto;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace MicrobUy_API.Services.StatisticsService
 {
@@ -106,16 +107,42 @@ namespace MicrobUy_API.Services.StatisticsService
                 .ThenByDescending(im => im.TotalPost)
                 .ToList();
 
-            // Asignar posiciones
             for (int i = 0; i < instanceMetrics.Count; i++)
             {
                 instanceMetrics[i].PositionTop = i + 1;
             }
 
-            // Ordenar la lista por PositionTop antes de devolverla
             instanceMetrics = instanceMetrics.OrderBy(im => im.PositionTop).ToList();
 
             return instanceMetrics;
+        }
+
+        public Task<List<NewMonthlyRegistrationsDto>> NewMonthlyRegistrationsAllTenant(int cantTop)
+        {
+            if (cantTop == 0)
+            {
+                cantTop = 5;
+            }
+            else if (cantTop > LIMITDATA)
+            {
+                cantTop = LIMITDATA;
+            }
+
+            var currentDate = DateTime.UtcNow; 
+
+            var monthlyRegistrations = Enumerable.Range(0, 12)
+                .Select(offset => currentDate.AddMonths(-offset)) // Obtener los últimos 12 meses
+                .Select(month => new NewMonthlyRegistrationsDto
+                {
+                    Month = month.ToString("MMMM yyyy", CultureInfo.InvariantCulture), // Formatear el mes
+                    NewTotalUser = _context.User.Count(u => u.CreationDate.Year == month.Year && u.CreationDate.Month == month.Month),
+                    NewTotalInstance = _context.TenantInstances.Count(i => i.CreationDate.Year == month.Year && i.CreationDate.Month == month.Month)
+                })
+                .OrderByDescending(dto => dto.NewTotalUser + dto.NewTotalInstance) 
+                .Take(cantTop)
+                .ToList();
+
+            return Task.FromResult(monthlyRegistrations);
         }
     }
 }

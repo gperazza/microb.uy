@@ -25,7 +25,7 @@ namespace MicrobUy_API.Controllers
         /// Obtiene la cantidad de usuarios de toda la plataforma
         /// </summary>
         /// <returns> </returns>
-        [HttpPost("CantUsersAllTenant")]
+        [HttpGet("CantUsersAllTenant")]
         public async Task<TotalAndPercentDto> CantUsersAllTenant()
         {
             return await _statisticsService.CantUsersAllTenant();
@@ -35,7 +35,7 @@ namespace MicrobUy_API.Controllers
         /// Obtiene la cantidad de usuarios nuevos este mes y su porcentaje contra el mes anterior
         /// </summary>
         /// <returns> </returns>
-        [HttpPost("CantUsersThisMonthAllTenant")]
+        [HttpGet("CantUsersThisMonthAllTenant")]
         public async Task<TotalAndPercentDto> CantUsersThisMonthAllTenant()
         {
             return await _statisticsService.CantUsersThisMonthAllTenant();
@@ -46,7 +46,7 @@ namespace MicrobUy_API.Controllers
         /// </summary>
         /// <param int="cantTop"></param>
         /// <returns> </returns>
-        [HttpPost("CantUsersByCityAllTenant")]
+        [HttpGet("CantUsersByCityAllTenant")]
         public async Task<List<UserCityDto>> CantUsersByCityAllTenant(int cantTop)
         {
             return await _statisticsService.CantUsersByCityAllTenant(cantTop);
@@ -57,10 +57,22 @@ namespace MicrobUy_API.Controllers
         /// </summary>
         /// <param int="cantTop"></param>
         /// <returns> </returns>
-        [HttpPost("InstanceMetricsAllTenant")]
+        [HttpGet("InstanceMetricsAllTenant")]
         public async Task<List<InstanceMetricsDto>> InstanceMetricsAllTenant(int cantTop)
         {
             return await _statisticsService.InstanceMetricsAllTenant(cantTop);
         }
+
+        /// <summary>
+        /// Devuelve metricas sobre cuantos usuarios neuvos y instancias hay cada mes, para todas las instancias en la plataforma. Maximo 20 Registros
+        /// </summary>
+        /// <param int="cantTop"></param>
+        /// <returns> </returns>
+        [HttpGet("NewMonthlyRegistrationsAllTenant")]
+        public async Task<List<NewMonthlyRegistrationsDto>> NewMonthlyRegistrationsAllTenant(int cantTop)
+        {
+            return await _statisticsService.NewMonthlyRegistrationsAllTenant(cantTop);
+        }
+
     }
 }
