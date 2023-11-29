@@ -7,5 +7,6 @@ namespace MicrobUy_API.Services.StatisticsService
         Task<TotalAndPercentDto> CantUsersAllTenant();
         Task<TotalAndPercentDto> CantUsersThisMonthAllTenant();
         Task<List<UserCityDto>> CantUsersByCityAllTenant(int cantTop);
+        Task<List<InstanceMetricsDto>> InstanceMetricsAllTenant(int cantTop);
     }
 }

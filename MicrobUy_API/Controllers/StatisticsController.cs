@@ -44,11 +44,23 @@ namespace MicrobUy_API.Controllers
         /// <summary>
         /// Obtiene la cantidad de usuarios para cada ciudad de toda la plataforma
         /// </summary>
+        /// <param int="cantTop"></param>
         /// <returns> </returns>
         [HttpPost("CantUsersByCityAllTenant")]
         public async Task<List<UserCityDto>> CantUsersByCityAllTenant(int cantTop)
         {
             return await _statisticsService.CantUsersByCityAllTenant(cantTop);
+        }
+
+        /// <summary>
+        /// Devuelve metricas generales de todas las instancias en la plataforma
+        /// </summary>
+        /// <param int="cantTop"></param>
+        /// <returns> </returns>
+        [HttpPost("InstanceMetricsAllTenant")]
+        public async Task<List<InstanceMetricsDto>> InstanceMetricsAllTenant(int cantTop)
+        {
+            return await _statisticsService.InstanceMetricsAllTenant(cantTop);
         }
     }
 }

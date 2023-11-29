@@ -66,5 +66,50 @@ namespace MicrobUy_API.Services.StatisticsService
 
             return userCityDtos;
         }
+
+        public async Task<List<InstanceMetricsDto>> InstanceMetricsAllTenant(int cantTop)
+        {
+            if (cantTop == 0)
+            {
+                cantTop = 5;
+            } else if (cantTop > 20)
+            {
+                cantTop = 20;
+            }
+
+            var totalUsersAllInstances = _context.User.Count();
+
+            var instanceMetrics = await _context.TenantInstances
+                .OrderByDescending(i => i.CreationDate)
+                .Take(cantTop)
+                .Select(instance => new InstanceMetricsDto
+                {
+                    InstanceName = instance.Nombre,
+                    TotalPost = _context.Post.Count(p => p.TenantInstanceId == instance.TenantInstanceId),
+                    TotalUsers = _context.User.Count(u => u.TenantInstanceId == instance.TenantInstanceId),
+                    PercentUserPlatform = totalUsersAllInstances == 0
+                        ? 0
+                        : (float)_context.User.Count(u => u.TenantInstanceId == instance.TenantInstanceId) * 100 / totalUsersAllInstances,
+                    CreationDate = instance.CreationDate
+                })
+                .ToListAsync();
+
+            // Calcular PositionTop basado en PercentUserPlatform y TotalPost
+            instanceMetrics = instanceMetrics
+                .OrderByDescending(im => im.PercentUserPlatform)
+                .ThenByDescending(im => im.TotalPost)
+                .ToList();
+
+            // Asignar posiciones
+            for (int i = 0; i < instanceMetrics.Count; i++)
+            {
+                instanceMetrics[i].PositionTop = i + 1;
+            }
+
+            // Ordenar la lista por PositionTop antes de devolverla
+            instanceMetrics = instanceMetrics.OrderBy(im => im.PositionTop).ToList();
+
+            return instanceMetrics;
+        }
     }
 }
