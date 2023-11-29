@@ -9,6 +9,8 @@ namespace MicrobUy_API.Services.StatisticsService
     {
         private readonly IMapper _mapper;
         private readonly TenantAplicationDbContext _context;
+        //Limita la cantidad de registros maximos que se pueden pedir
+        const int LIMITDATA = 20;
 
         public StatisticsService(TenantAplicationDbContext context, IMapper mapper)
         {
@@ -53,6 +55,10 @@ namespace MicrobUy_API.Services.StatisticsService
             if (cantTop == 0) {
                 cantTop = 5;
             }
+            else if (cantTop > LIMITDATA)
+            {
+                cantTop = LIMITDATA;
+            }
             var userCityDtos = await _context.User
                 .GroupBy(u => u.City.Name)
                 .OrderByDescending(g => g.Count())
@@ -72,9 +78,9 @@ namespace MicrobUy_API.Services.StatisticsService
             if (cantTop == 0)
             {
                 cantTop = 5;
-            } else if (cantTop > 20)
+            } else if (cantTop > LIMITDATA)
             {
-                cantTop = 20;
+                cantTop = LIMITDATA;
             }
 
             var totalUsersAllInstances = _context.User.Count();

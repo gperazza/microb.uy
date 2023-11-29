@@ -42,7 +42,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Obtiene la cantidad de usuarios para cada ciudad de toda la plataforma
+        /// Obtiene la cantidad de usuarios para cada ciudad de toda la plataforma. Maximo 20 Registros
         /// </summary>
         /// <param int="cantTop"></param>
         /// <returns> </returns>
@@ -53,7 +53,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Devuelve metricas generales de todas las instancias en la plataforma
+        /// Devuelve metricas generales de todas las instancias en la plataforma. Maximo 20 Registros
         /// </summary>
         /// <param int="cantTop"></param>
         /// <returns> </returns>
