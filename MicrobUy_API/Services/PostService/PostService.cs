@@ -111,6 +111,15 @@ namespace MicrobUy_API.Services.PostService
             return aux_post;
 
         }
+
+        public async Task<IEnumerable<PostDto>> GetAllPost()
+        {
+            var aux_post = _context.Post.Where(x => x.Active == true && !(x is CommentModel) && (x.isSanctioned == false)).Include(x => x.Comments).Include(x => x.UserOwner)
+               .Include(x => x.Likes).Include(x => x.Hashtag).Include(X => X.Likes).ToList();
+
+            var postDto = _mapper.Map<List<PostModel>, List<PostDto>>(aux_post);
+            return postDto;
+        }
         // ------------------------- FUNCIONALIDADES PARA REPORTAR Y MODERAR REPORTES ------------------------- //
         public async Task<bool> ReportPostById(int postId, string userName)
         {
@@ -150,6 +159,25 @@ namespace MicrobUy_API.Services.PostService
             _context.SaveChanges();
             return true;
         }
+        
+
+
+        // --------------------------------- FUNCIONALIDADES PARA ESTADISTICAS --------------------------------- //
+        public async Task<CountPostDto> GetCountPost()
+        {
+            var totalposts = _context.Post.Where(x => !(x is CommentModel)).ToList();
+            int cantPost = totalposts.Count;
+
+            var totalSancionPosts = _context.Post.Where(x => x.PendingToReview == true && (x.Active == true) && (x.isSanctioned == true)).ToList();
+            int cantPostSancionados = totalSancionPosts.Count;
+
+            CountPostDto aux_cant = new CountPostDto();
+            aux_cant.total = cantPost;
+            aux_cant.sancionados = cantPostSancionados;
+            return aux_cant;
+        }
+
+       
     }
 
 }

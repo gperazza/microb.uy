@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using MicrobUy_API.Dtos.PostDto;
+using MicrobUy_API.Paging;
 using MicrobUy_API.Services.PostService;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 
 namespace MicrobUy_API.Controllers
@@ -18,6 +20,9 @@ namespace MicrobUy_API.Controllers
         {
             _postService = postService;
         }
+
+
+        // ------------------------------------------ FUNCIONALIDADES ABM POSTEOS ---------------------------------------- //
 
         /// <summary>
         /// Necesita un comentario
@@ -128,6 +133,26 @@ namespace MicrobUy_API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="params"></param>
+        /// <returns></returns>
+        [HttpGet("GetAllPost")]
+        public async Task<IActionResult> GetAllPost([FromQuery] PaginationParams @params)
+        {
+            var result = await _postService.GetAllPost();
+
+            var paginationMetadata = new PaginationMetadata(result.Count(), @params.Page, @params.ItemsPerPage);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+            var items = result.Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                       .Take(@params.ItemsPerPage)
+                                       .ToList();
+      
+            return Ok(items);
+        }
+
         // ------------------------- FUNCIONALIDADES PARA REPORTAR Y MODERAR REPORTES ------------------------- //
 
         [HttpPut("ReportPost")]
@@ -155,6 +180,15 @@ namespace MicrobUy_API.Controllers
         public async Task<IActionResult> DismissReportedPost(int postId)
         {
             var result = await _postService.DismissReportedPost(postId);
+            return Ok(result);
+        }
+
+        // ------------------------------------- ENDPOINTS PARA ESTADISTICAS ------------------------------------- //
+
+        [HttpGet("GetCountPost")]
+        public async Task<IActionResult> GetCountPost()
+        {
+            var result = await _postService.GetCountPost();
             return Ok(result);
         }
 

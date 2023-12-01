@@ -33,5 +33,6 @@ namespace MicrobUy_API.Services.AccountService
         Task<IEnumerable<FollowedUserDto>> GetSancionatedUsers();
 
         Task<int> SancionateUser(string userName);
+
     }
 }
