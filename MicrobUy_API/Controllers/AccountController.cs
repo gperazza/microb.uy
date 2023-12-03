@@ -438,7 +438,7 @@ namespace MicrobUy_API.Controllers
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        [HttpPut("SancionateUser")]
+        [HttpPut("ActiveUser")]
         public async Task<IActionResult> ActiveUser(string userName)
         {
             IEnumerable<string> errors;
@@ -461,7 +461,7 @@ namespace MicrobUy_API.Controllers
         /// </summary>
         /// <param name="params"></param>
         /// <returns></returns>
-        [HttpGet("GetSanctionedUsers")]
+        [HttpGet("GetInactiveUsers")]
         public async Task<IActionResult> GetInactiveUsers([FromQuery] PaginationParams @params)
         {
             IEnumerable<FollowedUserDto> inactivedUsers = await _accountService.GetInactiveUsers();
