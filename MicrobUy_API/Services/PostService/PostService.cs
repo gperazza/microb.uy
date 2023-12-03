@@ -89,8 +89,8 @@ namespace MicrobUy_API.Services.PostService
 
         public async Task<IEnumerable<PostDto>> GetPostByUser(string userName)
         {
-            var aux_post = _context.Post.Where(x => x.UserOwner.UserName == userName && !(x is CommentModel) && (x.Active == true) && (x.isSanctioned == false)).Include(x => x.Comments).Include(x => x.UserOwner)
-               .Include(x => x.Likes).Include(x => x.Hashtag).Include(X=> X.Likes).ToList();
+            var aux_post = _context.Post.Include(x => x.UserOwner).Include(x => x.Comments)
+               .Include(x => x.Likes).Include(x => x.Hashtag).Include(X => X.Likes).Where(x => x.UserOwner.UserName == userName && !(x is CommentModel) && (x.Active) && (!x.isSanctioned)).ToList();
 
             var postDto = _mapper.Map<List<PostModel>, List<PostDto>>(aux_post);
             return postDto;

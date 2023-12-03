@@ -217,13 +217,15 @@ namespace MicrobUy_API.Services.AccountService
         {
             List<PostDto> userTimeLine = new List<PostDto>();
            
-            List<PostModel> userPosts = _context.User.Include(y => y.Posts).ThenInclude(y => y.UserOwner)
-                .Where(y => y.UserName == userName).SelectMany(y => y.Posts).Where(y => !y.isSanctioned).ToList();
+            List<PostModel> userPosts = _context.Post.Include(y => y.UserOwner).Include(y => y.Likes).Include(y => y.Comments).Include(y => y.Hashtag)
+                .Where(y => y.UserOwner.UserName == userName && !y.isSanctioned).ToList();
 
-            List<PostModel> userFollowingPosts = _context.User.Include(x => x.MuteUsers).Include(x => x.Following).ThenInclude(y => y.Posts).ThenInclude(y => y.UserOwner)
-                .ThenInclude(y => y.Likes).ThenInclude(y => y.Comments).ThenInclude(y => y.Hashtag)
+            List<int> postsIds = _context.User.Include(x => x.MuteUsers).Include(x => x.Following)
                 .Where(x => x.UserName == userName).SelectMany(x => x.Following.Where(y => !x.MuteUsers.Contains(y))) 
-                .SelectMany(x => x.Posts).Where(x => !x.isSanctioned).ToList();
+                .SelectMany(x => x.Posts).Where(x => !x.isSanctioned).Select(x => x.PostId).ToList();
+
+            List<PostModel> userFollowingPosts = _context.Post.Include(y => y.UserOwner).Include(y => y.Likes).Include(y => y.Comments).Include(y => y.Hashtag)
+                .Where(y => postsIds.Contains(y.PostId)).ToList();
 
             if (userFollowingPosts.Any())
             {

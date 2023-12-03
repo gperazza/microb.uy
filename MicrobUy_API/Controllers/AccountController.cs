@@ -71,6 +71,8 @@ namespace MicrobUy_API.Controllers
 
                 user.UserName = user.UserName + "@" + instance.Dominio;
                 userRegistration.Username = user.UserName;
+
+                //if (instance.Privacidad.)
             }
             else
             {
