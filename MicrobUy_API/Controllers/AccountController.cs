@@ -418,10 +418,9 @@ namespace MicrobUy_API.Controllers
         /// Necesita un comentario
         /// </summary>
         /// <param name="params"></param>
-        /// <param name="userName"></param>
         /// <returns></returns>
         [HttpGet("GetSanctionedUsers")]
-        public async Task<IActionResult> GetSanctionedUsers([FromQuery] PaginationParams @params, string userName)
+        public async Task<IActionResult> GetSanctionedUsers([FromQuery] PaginationParams @params)
         {
             IEnumerable<FollowedUserDto> sancionatedUsers = await _accountService.GetSancionatedUsers();
 
@@ -429,6 +428,48 @@ namespace MicrobUy_API.Controllers
             Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 
             var items = sancionatedUsers.Skip((@params.Page - 1) * @params.ItemsPerPage)
+                                       .Take(@params.ItemsPerPage)
+                                       .ToList();
+            return Ok(items);
+        }
+
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        [HttpPut("SancionateUser")]
+        public async Task<IActionResult> ActiveUser(string userName)
+        {
+            IEnumerable<string> errors;
+            List<string> listOfErrors = new List<string>();
+            int result = await _accountService.ActiveUser(userName);
+
+            if (result != 1)
+            {
+                listOfErrors.Add("No fue posible activar al usuario");
+                errors = listOfErrors.Select(x => x);
+                return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Necesita un comentario
+        /// </summary>
+        /// <param name="params"></param>
+        /// <returns></returns>
+        [HttpGet("GetSanctionedUsers")]
+        public async Task<IActionResult> GetInactiveUsers([FromQuery] PaginationParams @params)
+        {
+            IEnumerable<FollowedUserDto> inactivedUsers = await _accountService.GetInactiveUsers();
+
+            var paginationMetadata = new PaginationMetadata(inactivedUsers.Count(), @params.Page, @params.ItemsPerPage);
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+
+            var items = inactivedUsers.Skip((@params.Page - 1) * @params.ItemsPerPage)
                                        .Take(@params.ItemsPerPage)
                                        .ToList();
             return Ok(items);

@@ -272,5 +272,30 @@ namespace MicrobUy_API.Services.AccountService
             return sacionatedUsers;
 
         }
+
+        public async Task<int> ActiveUser(string userName)
+        {
+            UserModel user = _context.User.FirstOrDefault(x => x.UserName == userName);
+
+            if (user == null)
+                return 0;
+
+            user.Active = true;
+
+            return _context.SaveChanges();
+
+        }
+
+        public async Task<IEnumerable<FollowedUserDto>> GetInactiveUsers()
+        {
+            List<FollowedUserDto> inactiveUsers = new List<FollowedUserDto>();
+            List<UserModel> users = _context.User.Where(x => !x.Active).ToList();
+
+            if (users != null)
+                inactiveUsers = _mapper.Map<List<UserModel>, List<FollowedUserDto>>(users);
+
+            return inactiveUsers;
+
+        }
     }
 }

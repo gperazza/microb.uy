@@ -34,5 +34,9 @@ namespace MicrobUy_API.Services.AccountService
 
         Task<int> SancionateUser(string userName);
 
+        Task<int> ActiveUser(string userName);
+
+        Task<IEnumerable<FollowedUserDto>> GetInactiveUsers();
+
     }
 }

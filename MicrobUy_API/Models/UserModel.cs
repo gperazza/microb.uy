@@ -21,6 +21,7 @@ namespace MicrobUy_API.Models
         public DateTime Birthday { get; set; }
         public bool IsSanctioned { get; set; }
         public DateTime CreationDate { get; set; }
+        public bool Active { get; set; }
         public ICollection<TenantInstanceModel> AdministratedInstances { get; set; } = new List<TenantInstanceModel>();
         [NotMapped]
         public virtual ICollection<UserModel> Following { get; set; } = new List<UserModel>();
