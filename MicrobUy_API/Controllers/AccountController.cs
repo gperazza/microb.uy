@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Firebase.Auth;
 using FluentValidation;
 using MicrobUy_API.Dtos;
+using MicrobUy_API.Dtos.Enums;
 using MicrobUy_API.Dtos.PostDto;
 using MicrobUy_API.JwtFeatures;
 using MicrobUy_API.Models;
@@ -72,7 +74,8 @@ namespace MicrobUy_API.Controllers
                 user.UserName = user.UserName + "@" + instance.Dominio;
                 userRegistration.Username = user.UserName;
 
-                //if (instance.Privacidad.)
+                if (instance.Privacidad is PrivacidadEnum.Invitacion or PrivacidadEnum.Autorizacion)
+                    userRegistration.Active = false;
             }
             else
             {
@@ -128,14 +131,21 @@ namespace MicrobUy_API.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] UserAuthenticationRequestDto userForAuthentication)
         {
-            IdentityUser userExist = await _userManager.FindByNameAsync(userForAuthentication.Username);
-            if (userExist == null || !await _userManager.CheckPasswordAsync(userExist, userForAuthentication.Password))
-                return Unauthorized(new UserAuthenticationResponseDto { ErrorMessage = "Invalid Authentication" });
-            var signingCredentials = _jwtHandler.GetSigningCredentials();
-            var claims = await _jwtHandler.GetClaims(userExist);
-            var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-            return Ok(new UserAuthenticationResponseDto { IsAuthSuccessful = true, Token = token });
+            var user = await _accountService.GetUser(userForAuthentication.Username);
+
+            if (user.Active)
+            {
+                IdentityUser userExist = await _userManager.FindByNameAsync(userForAuthentication.Username);
+                if (userExist == null || !await _userManager.CheckPasswordAsync(userExist, userForAuthentication.Password))
+                    return Unauthorized(new UserAuthenticationResponseDto { ErrorMessage = "Invalid Authentication" });
+                var signingCredentials = _jwtHandler.GetSigningCredentials();
+                var claims = await _jwtHandler.GetClaims(userExist);
+                var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
+                var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+                return Ok(new UserAuthenticationResponseDto { IsAuthSuccessful = true, Token = token });
+            }
+
+            return Ok(new UserAuthenticationResponseDto { ErrorMessage = "Usuario inactivo" });
         }
 
         /// <summary>
@@ -155,11 +165,19 @@ namespace MicrobUy_API.Controllers
             IdentityUser userExist = await _userManager.FindByEmailAsync(claimEmail);
             if (userExist == null)
                 return Ok(new UserAuthenticationResponseDto { ErrorMessage = "El usuario no existe" });
-            var signingCredentials = _jwtHandler.GetSigningCredentials();
-            var claims = await _jwtHandler.GetClaims(userExist);
-            var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-            return Ok(new UserAuthenticationResponseDto { IsAuthSuccessful = true, Token = token });
+
+            var userIsActive = await _accountService.GetUser(userExist.UserName);
+            
+            if (userIsActive.Active)
+            {
+                var signingCredentials = _jwtHandler.GetSigningCredentials();
+                var claims = await _jwtHandler.GetClaims(userExist);
+                var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
+                var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+                return Ok(new UserAuthenticationResponseDto { IsAuthSuccessful = true, Token = token });
+            }
+
+            return Ok(new UserAuthenticationResponseDto { ErrorMessage = "Usuario inactivo" });
         }
 
         /// <summary>
