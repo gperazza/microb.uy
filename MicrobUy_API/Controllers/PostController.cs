@@ -25,7 +25,7 @@ namespace MicrobUy_API.Controllers
         // ------------------------------------------ FUNCIONALIDADES ABM POSTEOS ---------------------------------------- //
 
         /// <summary>
-        /// Necesita un comentario
+        /// Crea un posteo, para una instancia pasada por header
         /// </summary>
         /// <param name="post"></param>
         /// <param name="userName"></param>
@@ -51,7 +51,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Comenta un posteo, para una instancia pasada por header
         /// </summary>
         /// <param name="postId"></param>
         /// <param name="postComment"></param>
@@ -75,7 +75,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene los post de un usuario, para una instancia pasada por header
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
@@ -87,7 +87,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Da like a un post, para una instancia pasada por header
         /// </summary>
         /// <param name="postId"></param>
         /// <param name="userName"></param>
@@ -110,7 +110,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene un post segun el id, para una instancia pasada por header
         /// </summary>
         /// <param name="postId"></param>
         /// <returns></returns>
@@ -122,7 +122,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Borra un post segun el id, para una instancia pasada por header
         /// </summary>
         /// <param name="postId"></param>
         /// <returns></returns>
@@ -134,7 +134,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene todos los post, para una instancia pasada por header
         /// </summary>
         /// <param name="params"></param>
         /// <returns></returns>
@@ -155,6 +155,12 @@ namespace MicrobUy_API.Controllers
 
         // ------------------------- FUNCIONALIDADES PARA REPORTAR Y MODERAR REPORTES ------------------------- //
 
+        /// <summary>
+        /// Reporta un post segun id, para una instancia pasada por header
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         [HttpPut("ReportPost")]
         public async Task<IActionResult> ReportPostById(int postId, string userName)
         {
@@ -162,20 +168,33 @@ namespace MicrobUy_API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Obtiene los post reportados, para una instancia pasada por header
+        /// </summary>
+        /// <param></param>
+        /// <returns></returns>
         [HttpGet("GetReportedPost")]
         public async Task<IActionResult> GetReportedPosts()
         {
             var result = await _postService.GetReportedPosts();
             return Ok(result);
         }
-
+        /// <summary>
+        /// Da por valido un reporte con el id pasado, para una instancia pasada por header
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
         [HttpPut("PunishPost")]
         public async Task<IActionResult> PunishPost(int postId)
         {
             var result = await _postService.PunishPost(postId);
             return Ok(result);
         }
-
+        /// <summary>
+        /// Da por rechazado un reporte con id, para una instancia pasada por header
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
         [HttpPut("DismissReportedPost")]
         public async Task<IActionResult> DismissReportedPost(int postId)
         {
@@ -184,7 +203,11 @@ namespace MicrobUy_API.Controllers
         }
 
         // ------------------------------------- ENDPOINTS PARA ESTADISTICAS ------------------------------------- //
-
+        /// <summary>
+        /// cuenta la cantidad de post, para una instancia pasada por header
+        /// </summary>
+        /// <param></param>
+        /// <returns></returns>
         [HttpGet("GetCountPost")]
         public async Task<IActionResult> GetCountPost()
         {

@@ -40,7 +40,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Permite registrar un usuario en la plataforma si en el heder llega tenat=0 o en una instancia si en el header tenant es != 0
         /// </summary>
         /// <param name="userRegistration"></param>
         /// <returns></returns>
@@ -124,7 +124,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Login estandar, se realiza contra la aplicacion, necestia tenant en el header y estar activado el user
         /// </summary>
         /// <param name="userForAuthentication"></param>
         /// <returns></returns>
@@ -149,7 +149,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Login mediante SSO con Google
         /// </summary>
         /// <returns></returns>
         [HttpPost("LoginSocialMedia")]
@@ -181,7 +181,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Devuelve una lista de usuarios paginados, para una instancia especifica, necesita el dato tenant en el header
         /// </summary>
         /// <param name="params"></param>
         /// <returns></returns>
@@ -200,7 +200,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene un usuario segun su userName, para una instancia en especifico pasada por header
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
@@ -212,7 +212,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Modifica un usuario, para una instancia pasada por header
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
@@ -234,7 +234,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Sigue a otro usuario, para una instancia pasada por header
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="userNameToFollow"></param>
@@ -258,7 +258,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Bloquea a un usuario, para una instancia pasada por header
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="userNameToBlock"></param>
@@ -282,7 +282,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Mutea a un usuario, para una instancia pasada por header
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="userNameToMute"></param>
@@ -306,7 +306,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene los usuarios que sigue un usuario, para una instancia pasada por header
         /// </summary>
         /// <param name="params"></param>
         /// <param name="userName"></param>
@@ -327,7 +327,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene los usuarios que siguen a userName, para una instancia pasada por header
         /// </summary>
         /// <param name="params"></param>
         /// <param name="userName"></param>
@@ -349,7 +349,7 @@ namespace MicrobUy_API.Controllers
 
 
         /// <summary>
-        /// 
+        /// Obtiene los usuarios bloqueados de un userName, para una instancia pasada por header
         /// </summary>
         /// <param name="params"></param>
         /// <param name="userName"></param>
@@ -370,7 +370,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene los usuarios muteados de userName, para una instancia pasada por header
         /// </summary>
         /// <param name="params"></param>
         /// <param name="userName"></param>
@@ -391,7 +391,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene los post del usuario y de quienes sigue, para generar la timeLine paginada, para una instancia pasada por header
         /// </summary>
         /// <param name="params"></param>
         /// <param name="userName"></param>
@@ -412,7 +412,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Sanciona al usuario pasado por parametro
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
@@ -435,7 +435,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene los usuarios sancionados, para una instancia pasada por header
         /// </summary>
         /// <param name="params"></param>
         /// <returns></returns>
@@ -454,7 +454,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Activa a un usuario, para una instancia pasada por header
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
@@ -477,7 +477,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene los usuarios inactivos, para una instancia pasada por header
         /// </summary>
         /// <param name="params"></param>
         /// <returns></returns>
