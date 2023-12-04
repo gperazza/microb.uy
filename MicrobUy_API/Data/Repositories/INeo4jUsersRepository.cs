@@ -1,4 +1,5 @@
 ﻿using MicrobUy_API.Dtos;
+using MicrobUy_API.Dtos.SuggestNeo4jDto;
 using MicrobUy_API.Models;
 
 namespace MicrobUy_API.Data.Repositories
@@ -15,5 +16,6 @@ namespace MicrobUy_API.Data.Repositories
         Task<List<PostWhitMostLikeNeo4jDto>> PostWhitMostLikeAllTenant(int topCant);
         Task<List<PostWhitMostLikeNeo4jDto>> PostWhitMostLikeByTenant(int tenantId, int topCant);
         Task<List<SuggestUserNeo4jDto>> SuggestUsersByTenant(int tenantId, int userId, int topCant);
+        Task SenttingSuggestUsersAllTenant(SenttingSuggestUsersNeo4jDto senttingSuggestUsersNeo);
     }
 }

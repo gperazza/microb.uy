@@ -3,6 +3,7 @@ using MicrobUy_API.Dtos;
 using Neo4j.Driver;
 using static MicrobUy_API.Models.UserModel;
 using System;
+using MicrobUy_API.Dtos.SuggestNeo4jDto;
 
 namespace MicrobUy_API.Data.Repositories
 {
@@ -267,6 +268,38 @@ namespace MicrobUy_API.Data.Repositories
                     };
                 });
                 return posts;
+            });
+        }
+
+        public async Task SenttingSuggestUsersAllTenant(SenttingSuggestUsersNeo4jDto senttingSuggestUsersNeo)
+        {
+            await using var session = _driver.AsyncSession(WithDatabase);
+            await session.ExecuteWriteAsync(async transaction =>
+            {
+                var resultLIVE = await transaction.RunAsync(@"
+                    MATCH (User)-[Rl:LIVE]->(City) SET Rl.importance = $LIVE
+                    ", new {  senttingSuggestUsersNeo.LIVE});
+                await resultLIVE.ConsumeAsync();
+                var resultHAVE = await transaction.RunAsync(@"
+                    MATCH (User)-[Rh:HAVE]->(Ocupation) SET Rh.importance = $HAVE
+                    ", new { senttingSuggestUsersNeo.HAVE });
+                await resultHAVE.ConsumeAsync();
+                var resultBORN = await transaction.RunAsync(@"
+                    MATCH (User)-[Rb:BORN]->(Birthday) SET Rb.importance = $BORN
+                    ", new { senttingSuggestUsersNeo.BORN });
+                await resultBORN.ConsumeAsync();
+                var resultWITH_HASHTAG = await transaction.RunAsync(@"
+                    MATCH (Post)-[Rw_h:WITH_HASHTAG]->(Hashtag) SET Rw_h.importance = $WITH_HASHTAG
+                    ", new { senttingSuggestUsersNeo.WITH_HASHTAG });
+                await resultWITH_HASHTAG.ConsumeAsync();
+                var resultLIKE = await transaction.RunAsync(@"
+                    MATCH (Post)-[Rlik:LIKE]->(City) SET Rlik.importance = $LIKE
+                    ", new { senttingSuggestUsersNeo.LIKE });
+                await resultLIKE.ConsumeAsync();
+                var resultPOSTED = await transaction.RunAsync(@"
+                    MATCH (User)-[Rp:POSTED]->(Post) SET Rp.importance = $POSTED
+                    ", new { senttingSuggestUsersNeo.POSTED });
+                await resultPOSTED.ConsumeAsync();
             });
         }
     }

@@ -1,10 +1,12 @@
 ﻿using MicrobUy_API.Data.Repositories;
 using MicrobUy_API.Dtos;
+using MicrobUy_API.Dtos.SuggestNeo4jDto;
 using MicrobUy_API.Models;
 using MicrobUy_API.Services.TenantInstanceService;
 using Microsoft.AspNetCore.Mvc;
 using Neo4j.Driver;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 
 namespace MicrobUy_API.Controllers
 {
@@ -132,6 +134,31 @@ namespace MicrobUy_API.Controllers
         public Task<List<SuggestUserNeo4jDto>> SuggestUsersByTenant([Required] int tenantId, [Required] int userId, int topCant)
         {
             return _neo4jUsersRepository.SuggestUsersByTenant(tenantId, userId, topCant);
+        }
+
+        /// <summary>
+        /// Ajusta los parametros que utilizara la funcion SuggestUsersByTenant, para recomendar usuarios
+        /// </summary>
+        /// <param name="senttingSuggestUsersNeo"></param>
+        /// <returns></returns>
+        [HttpPost("SenttingSuggestUsersAllTenant")]
+        public async Task<IActionResult> SenttingSuggestUsersAllTenant([FromBody][Required] SenttingSuggestUsersNeo4jDto senttingSuggestUsersNeo)
+        {
+            if (senttingSuggestUsersNeo.LIVE > 100 || senttingSuggestUsersNeo.LIVE<0 ||
+                senttingSuggestUsersNeo.LIKE > 100 || senttingSuggestUsersNeo.LIKE < 0 ||
+                senttingSuggestUsersNeo.BORN > 100 || senttingSuggestUsersNeo.BORN < 0 ||
+                senttingSuggestUsersNeo.HAVE > 100 || senttingSuggestUsersNeo.HAVE < 0 ||
+                senttingSuggestUsersNeo.POSTED > 100 || senttingSuggestUsersNeo.POSTED < 0 ||
+                senttingSuggestUsersNeo.WITH_HASHTAG > 100 || senttingSuggestUsersNeo.WITH_HASHTAG < 0)
+            {
+                return BadRequest("Los argumentos no estan dentro del rango natural 0 a 100 ");
+            }
+            else
+            {
+                await _neo4jUsersRepository.SenttingSuggestUsersAllTenant(senttingSuggestUsersNeo);
+                return Ok();
+            }
+            
         }
     }
 }
