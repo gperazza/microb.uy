@@ -23,7 +23,7 @@ namespace MicrobUy_API.Controllers
             _neo4jUsersRepository = neo4jUsersRepository;
         }
         //Limite general para los top, asi se evita exceso de datos devueltos
-        public int LimitTop(int topCant)
+        int LimitTop(int topCant)
         {
             if (topCant == 0)
             {
