@@ -132,7 +132,10 @@ namespace MicrobUy_API.Controllers
         public async Task<IActionResult> Login([FromBody] UserAuthenticationRequestDto userForAuthentication)
         {
             var user = await _accountService.GetUser(userForAuthentication.Username);
-
+            
+            if(user == null)
+                return BadRequest(new UserAuthenticationResponseDto { ErrorMessage = "Error de usuario" });
+           
             if (user.Active)
             {
                 IdentityUser userExist = await _userManager.FindByNameAsync(userForAuthentication.Username);
@@ -167,7 +170,10 @@ namespace MicrobUy_API.Controllers
                 return Ok(new UserAuthenticationResponseDto { ErrorMessage = "El usuario no existe" });
 
             var userIsActive = await _accountService.GetUser(userExist.UserName);
-            
+           
+            if (userIsActive == null)
+                return BadRequest(new UserAuthenticationResponseDto { ErrorMessage = "Error de usuario" });
+
             if (userIsActive.Active)
             {
                 var signingCredentials = _jwtHandler.GetSigningCredentials();
