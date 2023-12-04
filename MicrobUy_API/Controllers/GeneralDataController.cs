@@ -20,7 +20,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Crea tematicas para usar en las instancias
         /// </summary>
         /// <param name="tematica"></param>
         /// <returns></returns>
@@ -32,7 +32,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene las tematicas
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetTematicas")]
@@ -43,7 +43,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene la tematica de id
         /// </summary>
         /// <param name="tematicaId"></param>
         /// <returns></returns>
@@ -55,7 +55,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Necesita un comentario
+        /// Obtiene una lista de ciudades
         /// </summary>
         /// <returns></returns>
         [HttpGet("GetCities")]
