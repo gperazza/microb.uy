@@ -4,6 +4,6 @@
     {
         public int UserId { get; set; }
         public int TenantId { get; set; }
-        public int ProbSuggest {  get; set; }
+        public int totalImportance {  get; set; }
     }
 }

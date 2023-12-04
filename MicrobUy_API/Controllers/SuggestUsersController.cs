@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Neo4j.Driver;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Runtime.Intrinsics.X86;
 
 namespace MicrobUy_API.Controllers
 {
@@ -15,12 +16,25 @@ namespace MicrobUy_API.Controllers
     public class SuggestUsersController : ControllerBase
     {
         private readonly INeo4jUsersRepository _neo4jUsersRepository;
+        private const int LIMITDATA = 15;
 
         public SuggestUsersController(INeo4jUsersRepository neo4jUsersRepository)
         {
             _neo4jUsersRepository = neo4jUsersRepository;
         }
-
+        //Limite general para los top, asi se evita exceso de datos devueltos
+        public int LimitTop(int topCant)
+        {
+            if (topCant == 0)
+            {
+                topCant = 5;
+            }
+            else if (topCant > LIMITDATA)
+            {
+                topCant = LIMITDATA;
+            }
+            return topCant;
+        }
         /// <summary>
         /// Crea un usuario, en la base de datos Neo4j
         /// </summary>
@@ -86,6 +100,7 @@ namespace MicrobUy_API.Controllers
         [HttpGet("TopHashtagByTenant")]
         public Task<List<HashtagNeo4jDto>> TopHashtagByTenant([Required]int tenantId, int topCant)
         {
+            topCant = LimitTop(topCant);
             return _neo4jUsersRepository.TopHashtagByTenant(tenantId, topCant);
         }
 
@@ -97,6 +112,7 @@ namespace MicrobUy_API.Controllers
         [HttpGet("TopHashtagAllTenant")]
         public Task<List<HashtagNeo4jDto>> TopHashtagAllTenant(int topCant)
         {
+            topCant = LimitTop(topCant);
             return _neo4jUsersRepository.TopHashtagAllTenant(topCant);
         }
 
@@ -108,6 +124,7 @@ namespace MicrobUy_API.Controllers
         [HttpGet("PostWhitMostLikeAllTenant")]
         public Task<List<PostWhitMostLikeNeo4jDto>> PostWhitMostLikeAllTenant(int topCant)
         {
+            topCant = LimitTop(topCant);
             return _neo4jUsersRepository.PostWhitMostLikeAllTenant(topCant);
         }
 
@@ -120,6 +137,7 @@ namespace MicrobUy_API.Controllers
         [HttpGet("PostWhitMostLikeByTenant")]
         public Task<List<PostWhitMostLikeNeo4jDto>> PostWhitMostLikeByTenant([Required] int tenantId, int topCant)
         {
+            topCant = LimitTop(topCant);
             return _neo4jUsersRepository.PostWhitMostLikeByTenant(tenantId, topCant);
         }
 
@@ -133,6 +151,7 @@ namespace MicrobUy_API.Controllers
         [HttpGet("SuggestUsersByTenant")]
         public Task<List<SuggestUserNeo4jDto>> SuggestUsersByTenant([Required] int tenantId, [Required] int userId, int topCant)
         {
+            topCant = LimitTop(topCant);
             return _neo4jUsersRepository.SuggestUsersByTenant(tenantId, userId, topCant);
         }
 

@@ -27,17 +27,6 @@ namespace MicrobUy_API.Data.Repositories
         {
             return Environment.GetEnvironmentVariable("NEO4J_DATABASE") ?? "node4j";
         }
-        //returns a IEnumerable of UserSuggestDto
-        /*
-        private static IEnumerable<UserSuggestDto> MapCastUser(IEnumerable<IDictionary<string, object>> users)
-        {
-            return users
-                .Select(dictionary =>
-                    new UserSuggestDto(
-                        dictionary["name"].As<string>()
-                    )
-                ).ToList();
-        }*/
         //Create a node in Neo4j user, city and occupation, along with their relationship
         public async Task CreateUser(CreateUserNeo4jDto createUsNeo4jDto)
         {
@@ -117,6 +106,7 @@ namespace MicrobUy_API.Data.Repositories
                 return summary.Counters.NodesCreated + summary.Counters.RelationshipsCreated + summary.Counters.PropertiesSet + summary.Counters.LabelsAdded;
             });
         }
+        //Borra una relacion de like
         public async Task<int> DeleteLike(GiveLikeNeo4jDto giveLikeNeo4JDto)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
@@ -188,7 +178,7 @@ namespace MicrobUy_API.Data.Repositories
                 return hashtags;
             });
         }
-
+        //Obtiene los post con mas like en todas las instancias
         public async Task<List<PostWhitMostLikeNeo4jDto>> PostWhitMostLikeAllTenant(int topCant)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
@@ -216,7 +206,7 @@ namespace MicrobUy_API.Data.Repositories
             });
 
         }
-
+        //Obtiene los post con mas like en una instancia especificada
         public async Task<List<PostWhitMostLikeNeo4jDto>> PostWhitMostLikeByTenant(int tenantId, int topCant)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
@@ -243,34 +233,38 @@ namespace MicrobUy_API.Data.Repositories
                 return posts;
             });
         }
-        //Por continuar... Ya esta parte de la consulta en la BD
+        //Funcion para recomendar usuarios, segun si tiene nodos en comun y la sumatoria del atributo importance
         public async Task<List<SuggestUserNeo4jDto>> SuggestUsersByTenant(int tenantId, int userId, int topCant)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
             return await session.ExecuteReadAsync(async transaction =>
             {
                 var result = await transaction.RunAsync(@"
-                    match (user1:User {userId: $userId})-[:LIKE]->(post:Post)<-[:LIKE]-(user2:User)
-                    with user1, post, user2
-                    match (post)-[:WITH_HASHTAG]->(h:Hashtag)
-                    with user1, user2, post
-                    match (user1)-[:LIVE]->(c:City)<-[:LIVE]-(user2)
-                    with user1, user2,post, c
-                    match (user1)-[:BORN]->(b:Birthday)<-[:BORN]-(user2)
-                    Return user2.userId AS UserId",
+                    MATCH (u:User {userId: $userId, tenantID: $tenantId})
+                    MATCH (similarUser:User)-[r]->(commonNode)
+                    WHERE similarUser.tenantID = $tenantId
+                      AND u <> similarUser
+                      AND r.importance > 0
+                      AND NOT similarUser.isSanctioned
+                    WITH similarUser, SUM(r.importance) AS totalImportance
+                    ORDER BY totalImportance DESC
+                    LIMIT $topCant
+                    RETURN similarUser.tenantID AS TenantId, similarUser.userId AS UserId, totalImportance
+                    ",
                     new { tenantId, topCant, userId });
                 List<SuggestUserNeo4jDto> posts = await result.ToListAsync(record =>
                 {
                     return new SuggestUserNeo4jDto
                     {
                         UserId = record["UserId"].As<int>(),
-                        TenantId = tenantId
+                        TenantId = record["TenantId"].As<int>(),
+                        totalImportance = record["totalImportance"].As<int>()
                     };
                 });
                 return posts;
             });
         }
-
+        //Permite ajustar la importanca que tiene cada realcion
         public async Task SenttingSuggestUsersAllTenant(SenttingSuggestUsersNeo4jDto senttingSuggestUsersNeo)
         {
             await using var session = _driver.AsyncSession(WithDatabase);
