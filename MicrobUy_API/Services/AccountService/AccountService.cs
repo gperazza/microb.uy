@@ -5,7 +5,6 @@ using MicrobUy_API.Dtos;
 using MicrobUy_API.Dtos.PostDto;
 using MicrobUy_API.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace MicrobUy_API.Services.AccountService
 {
