@@ -256,7 +256,7 @@ namespace MicrobUy_API.Data.Repositories
                 {
                     return new SuggestUserNeo4jDto
                     {
-                        UserName = record["userName"].As<String>(),
+                        UserName = record["UserName"].As<string>(),
                         TenantId = record["TenantId"].As<int>(),
                         totalImportance = record["totalImportance"].As<int>()
                     };
