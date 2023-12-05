@@ -54,7 +54,7 @@ namespace MicrobUy_API.Controllers
             if (userRegistration == null || !ModelState.IsValid)
                 return BadRequest();
 
-            int tenantInstance = Convert.ToInt32(HttpContext.Request.Headers["tenant"]);
+            int tenantInstance = HttpContext != null ? Convert.ToInt32(HttpContext.Request.Headers["tenant"]) : 0;
 
 
             IdentityUser user = _mapper.Map<IdentityUser>(userRegistration);
@@ -152,7 +152,7 @@ namespace MicrobUy_API.Controllers
         }
 
         /// <summary>
-        /// Login mediante SSO con Google
+        /// Login mediante Google Authentication
         /// </summary>
         /// <returns></returns>
         [HttpPost("LoginSocialMedia")]
