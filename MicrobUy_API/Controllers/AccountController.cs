@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Firebase.Auth;
 using FluentValidation;
 using MicrobUy_API.Dtos;
 using MicrobUy_API.Dtos.Enums;
@@ -255,6 +254,30 @@ namespace MicrobUy_API.Controllers
             if (result != 2)
             {
                 listOfErrors.Add("No fue posible seguir al usuario");
+                errors = listOfErrors.Select(x => x);
+                return BadRequest(new UserRegistrationResponseDto { Errors = errors });
+
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Dejar de seguir a un usuario, para una instancia pasada por header
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="userNameToUnFollow"></param>
+        /// <returns></returns>
+        [HttpPut("UnFollowUser")]
+        public async Task<IActionResult> UnFollowUser(string userName, string userNameToUnFollow)
+        {
+            IEnumerable<string> errors;
+            List<string> listOfErrors = new List<string>();
+            int result = await _accountService.UnFollowUser(userName, userNameToUnFollow);
+
+            if (result != 2)
+            {
+                listOfErrors.Add("No fue posible dejar de seguir al usuario");
                 errors = listOfErrors.Select(x => x);
                 return BadRequest(new UserRegistrationResponseDto { Errors = errors });
 

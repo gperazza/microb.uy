@@ -125,6 +125,22 @@ namespace MicrobUy_API.Services.AccountService
 
         }
 
+        public async Task<int> UnFollowUser(string userName, string userNameToUnFollow)
+        {
+            UserModel user = _context.User.Include(x => x.Following).FirstOrDefault(x => x.UserName == userName);
+            UserModel userToUnFollow = _context.User.Include(x => x.Followers).FirstOrDefault(x => x.UserName == userNameToUnFollow);
+
+            if (user == null || userToUnFollow == null)
+                return 0;
+
+            user.Following.Remove(userToUnFollow);
+            userToUnFollow.Followers.Remove(user);
+            _context.User.Update(user);
+            _context.User.Update(userToUnFollow);
+            return _context.SaveChanges();
+
+        }
+
         public async Task<IEnumerable<FollowedUserDto>> GetFollowedUsers(string userName)
         {
             List<FollowedUserDto> following = new List<FollowedUserDto>();

@@ -38,5 +38,7 @@ namespace MicrobUy_API.Services.AccountService
 
         Task<IEnumerable<FollowedUserDto>> GetInactiveUsers();
 
+        Task<int> UnFollowUser(string userName, string userNameToUnFollow);
+
     }
 }

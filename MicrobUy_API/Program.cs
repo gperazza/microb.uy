@@ -20,7 +20,6 @@ using Neo4j.Driver;
 using MicrobUy_API.Data.Repositories;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-using MicrobUy_API.Controllers;
 using MicrobUy_API.Services.StatisticsService;
 using AutoMapper;
 
@@ -127,33 +126,29 @@ builder.Services.AddCors(opt =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicrobUY v1"));
+
+
+//Seed de la Base de Datos
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicrobUY v1"));
+    var context = scope.ServiceProvider.GetRequiredService<TenantAplicationDbContext>;
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>;
+    var mapper = scope.ServiceProvider.GetRequiredService<IMapper>;
 
-
-    //Seed de la Base de Datos
-    using (var scope = app.Services.CreateScope())
-    {
-        var context = scope.ServiceProvider.GetRequiredService<TenantAplicationDbContext>;
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>;
-        var mapper = scope.ServiceProvider.GetRequiredService<IMapper>;
-
-        SeedTematica.RunSeedTematica(context.Invoke());
-        SeedCity.RunSeedCity(context.Invoke());
-        Thread.Sleep(3000);
-        SeedPlataformUsers.RunSeedUserPlataform(context.Invoke(), userManager.Invoke(), mapper.Invoke());
-        Thread.Sleep(3000);
-        SeedInstancia.RunSeedInstances(context.Invoke(), mapper.Invoke());
-        Thread.Sleep(3000);
-        SeedUsers.RunSeedUsers(context.Invoke(), userManager.Invoke(), mapper.Invoke());
-        Thread.Sleep(3000);
-        SeedPosts.RunSeedPostsAndFollowUser(context.Invoke(), mapper.Invoke());
-    }
-
+    SeedTematica.RunSeedTematica(context.Invoke());
+    SeedCity.RunSeedCity(context.Invoke());
+    Thread.Sleep(3000);
+    SeedPlataformUsers.RunSeedUserPlataform(context.Invoke(), userManager.Invoke(), mapper.Invoke());
+    Thread.Sleep(3000);
+    SeedInstancia.RunSeedInstances(context.Invoke(), mapper.Invoke());
+    Thread.Sleep(3000);
+    SeedUsers.RunSeedUsers(context.Invoke(), userManager.Invoke(), mapper.Invoke());
+    Thread.Sleep(3000);
+    SeedPosts.RunSeedPostsAndFollowUser(context.Invoke(), mapper.Invoke());
 }
 
 app.UseCors(misReglasCors);

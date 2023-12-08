@@ -174,7 +174,7 @@ namespace MicrobUy_API.Controllers
             }
             else
             {
-                await _neo4jUsersRepository.SenttingSuggestUsersAllTenant(senttingSuggestUsersNeo);
+                //await _neo4jUsersRepository.SenttingSuggestUsersAllTenant(senttingSuggestUsersNeo);
                 return Ok();
             }
             
