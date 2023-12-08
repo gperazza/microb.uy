@@ -249,7 +249,7 @@ namespace MicrobUy_API.Data.Repositories
                     WITH similarUser, SUM(r.importance) AS totalImportance
                     ORDER BY totalImportance DESC
                     LIMIT $topCant
-                    RETURN similarUser.tenantID AS TenantId, similarUser.userName AS UserName, totalImportance
+                    RETURN similarUser.tenantID AS TenantId, similarUser.name AS UserName, totalImportance
                     ",
                     new { tenantId, topCant, userId });
                 List<SuggestUserNeo4jDto> posts = await result.ToListAsync(record =>
