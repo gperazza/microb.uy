@@ -1,17 +1,8 @@
 ﻿using AutoMapper;
 using MicrobUy_API.Data;
 using MicrobUy_API.Models;
-
 using Microsoft.EntityFrameworkCore;
-using Azure.Core;
-
-
-using MicrobUy_API.Services.AccountService;
-
-using Microsoft.EntityFrameworkCore;
-using Azure.Core;
 using MicrobUy_API.Dtos.PostDto;
-using MicrobUy_API.Dtos;
 
 
 namespace MicrobUy_API.Services.PostService

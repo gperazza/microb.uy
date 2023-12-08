@@ -104,13 +104,13 @@ builder.Services.AddControllersWithViews()
     .AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
-
+    
 //NEO4J
 builder.Services.AddSingleton(GraphDatabase.Driver(
-    Environment.GetEnvironmentVariable("NEO4J_URI") ?? "bolt://localhost",
+    builder.Configuration.GetValue<string>("ConnectionString-neo4j:NEO4J_URI") ?? "bolt://localhost",
     AuthTokens.Basic(
-        Environment.GetEnvironmentVariable("NEO4J_USER") ?? "micro",
-        Environment.GetEnvironmentVariable("NEO4J_PASSWORD") ?? "forcepassword"
+        builder.Configuration.GetValue<string>("ConnectionString-neo4j:NEO4J_USER") ?? "micro",
+         builder.Configuration.GetValue<string>("ConnectionString-neo4j:NEO4J_PASSWORD") ?? "forcepassword"
     )
 ));
 

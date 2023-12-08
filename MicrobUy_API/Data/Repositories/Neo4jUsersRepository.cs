@@ -9,23 +9,26 @@ namespace MicrobUy_API.Data.Repositories
 {
     public class Neo4jUsersRepository : INeo4jUsersRepository
     {
-        private IDriver _driver;
-        public Neo4jUsersRepository(IDriver driver)
+        private readonly IConfiguration _config;
+        private readonly IDriver _driver;
+
+        public Neo4jUsersRepository(IConfiguration config, IDriver driver)
         {
+            _config = config;
             _driver = driver;
         }
-        private static void WithDatabase(SessionConfigBuilder sessionConfigBuilder)
+        private void WithDatabase(SessionConfigBuilder sessionConfigBuilder)
         {
-            var neo4jVersion = Environment.GetEnvironmentVariable("NEO4J_VERSION") ?? "";
+            var neo4jVersion = _config.GetValue<string>("ConnectionString-neo4j:NEO4J_VERSION") ?? "";
             if (!neo4jVersion.StartsWith("4"))
                 return;
 
             sessionConfigBuilder.WithDatabase(Database());
         }
         //Get a name of DB
-        private static string Database()
+        private string Database()
         {
-            return Environment.GetEnvironmentVariable("NEO4J_DATABASE") ?? "node4j";
+            return _config.GetValue<string>("ConnectionString-neo4j:NEO4J_DATABASE") ?? "node4j";
         }
         //Create a node in Neo4j user, city and occupation, along with their relationship
         public async Task CreateUser(CreateUserNeo4jDto createUsNeo4jDto)
