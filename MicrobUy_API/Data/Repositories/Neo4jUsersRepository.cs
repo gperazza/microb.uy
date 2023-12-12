@@ -43,7 +43,7 @@ namespace MicrobUy_API.Data.Repositories
                     MERGE (birth:Birthday {birthdayDate:date($Birthday)})
                     MERGE (city:City {name: $City, tenantID: $TenantId})
                     MERGE (ocupation:Ocupation {name: $Occupation, tenantID: $TenantId})
-                    CREATE (user)-[:LIVE{importance:10}]->(city),
+                    MERGE (user)-[:LIVE{importance:10}]->(city),
                            (user)-[:BORN{importance:30}]->(birth),
                            (user)-[:HAVE{importance:20}]->(ocupation)",
                     new { createUsNeo4jDto.UserId, createUsNeo4jDto.TenantId, createUsNeo4jDto.UserName, createUsNeo4jDto.Occupation, createUsNeo4jDto.City, createUsNeo4jDto.CreationDate, createUsNeo4jDto.IsSanctioned, createUsNeo4jDto.Birthday });
@@ -60,11 +60,11 @@ namespace MicrobUy_API.Data.Repositories
                 var cursor = await transaction.RunAsync(@"
                     MATCH (u:User {userId: $userId}) 
                     MERGE (pos:Post {postId: $postId, tenantId: $tenantId, postCreated:date($postCreated), isSanctioned: $isSanctioned})
-                    CREATE (u)-[r2:POSTED]->(pos)
+                    MERGE (u)-[r2:POSTED]->(pos)
                     WITH pos
                     UNWIND $hashtags AS hashtag
                     MERGE (h:Hashtag {name: hashtag, tenantID: $tenantId})
-                    CREATE (pos)-[r1:WITH_HASHTAG{importance:40}]->(h)",
+                    MERGE (pos)-[r1:WITH_HASHTAG{importance:40}]->(h)",
                     new { crearPDto.userId, crearPDto.tenantId, crearPDto.postId, crearPDto.postCreated, crearPDto.isSanctioned, crearPDto.hashtags });
 
                 var summary = await cursor.ConsumeAsync();
