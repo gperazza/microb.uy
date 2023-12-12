@@ -43,9 +43,9 @@ namespace MicrobUy_API.Data.Repositories
                     MERGE (birth:Birthday {birthdayDate:date($Birthday)})
                     MERGE (city:City {name: $City, tenantID: $TenantId})
                     MERGE (ocupation:Ocupation {name: $Occupation, tenantID: $TenantId})
-                    MERGE (user)-[:LIVE{importance:10}]->(city),
-                           (user)-[:BORN{importance:30}]->(birth),
-                           (user)-[:HAVE{importance:20}]->(ocupation)",
+                    MERGE (user)-[:LIVE{importance:10}]->(city)
+                    MERGE (user)-[:BORN{importance:30}]->(birth)
+                    MERGE (user)-[:HAVE{importance:20}]->(ocupation)",
                     new { createUsNeo4jDto.UserId, createUsNeo4jDto.TenantId, createUsNeo4jDto.UserName, createUsNeo4jDto.Occupation, createUsNeo4jDto.City, createUsNeo4jDto.CreationDate, createUsNeo4jDto.IsSanctioned, createUsNeo4jDto.Birthday });
 
                 var summary = await cursor.ConsumeAsync();
