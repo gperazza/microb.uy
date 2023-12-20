@@ -1,20 +1,27 @@
 ﻿using AutoMapper;
 using Firebase.Auth;
+using MicrobUy_API.Dtos;
 using MicrobUy_API.Dtos.PostDto;
 using MicrobUy_API.Models;
+using Neo4j.Driver;
 
 namespace MicrobUy_API.Data.SeedData
 {
 
     public class SeedPosts
     {
-        private static IMapper _mapper;
-        private static TenantAplicationDbContext _context;
+        private IMapper _mapper;
+        private TenantAplicationDbContext _context;
+        private IConfiguration _config;
+        private IDriver _driver;
 
-        public static void RunSeedPostsAndFollowUser(TenantAplicationDbContext context, IMapper mapper)
+
+        public void RunSeedPostsAndFollowUser(TenantAplicationDbContext context, IMapper mapper, IConfiguration config, IDriver driver)
         {
             _context = context;
             _mapper = mapper;
+            _config = config;
+            _driver = driver;
 
             try
             {
@@ -72,6 +79,18 @@ namespace MicrobUy_API.Data.SeedData
                         _context.Add(newPost);
                         _context.SaveChanges();
 
+                        var neo4jPost = new CrearPostNeo4jDto
+                        {
+                            hashtags = posttd.Hashtag,
+                            isSanctioned = false,
+                            postCreated = DateTime.Now,
+                            postId = newPost.PostId,
+                            tenantId = 1,
+                            userId = userExist.UserId
+                        };
+
+                       Task<int> res = Task.Run<int>(async () => await CreatePost(neo4jPost));
+
                         index++;
                     }
 
@@ -96,6 +115,19 @@ namespace MicrobUy_API.Data.SeedData
                         _context.Add(newPost);
                         _context.SaveChanges();
 
+                        var neo4jPost = new CrearPostNeo4jDto
+                        {
+                            hashtags = postpluy.Hashtag,
+                            isSanctioned = false,
+                            postCreated = DateTime.Now,
+                            postId = newPost.PostId,
+                            tenantId = 2,
+                            userId = userExist.UserId
+                        };
+
+                        Task<int> res = Task.Run<int>(async () => await CreatePost(neo4jPost));
+
+
                         index++;
                     }
 
@@ -119,6 +151,18 @@ namespace MicrobUy_API.Data.SeedData
 
                         _context.Add(newPost);
                         _context.SaveChanges();
+
+                        var neo4jPost = new CrearPostNeo4jDto
+                        {
+                            hashtags = postcin.Hashtag,
+                            isSanctioned = false,
+                            postCreated = DateTime.Now,
+                            postId = newPost.PostId,
+                            tenantId = 3,
+                            userId = userExist.UserId
+                        };
+
+                        Task<int> res = Task.Run<int>(async () => await CreatePost(neo4jPost));
 
                         index++;
                     }
@@ -201,6 +245,40 @@ namespace MicrobUy_API.Data.SeedData
 
                 throw ex;
             }
+        }
+
+        private void WithDatabase(SessionConfigBuilder sessionConfigBuilder)
+        {
+            var neo4jVersion = _config.GetValue<string>("ConnectionString-neo4j:NEO4J_VERSION") ?? "";
+            if (!neo4jVersion.StartsWith("4"))
+                return;
+
+            sessionConfigBuilder.WithDatabase(Database());
+        }
+        //Get a name of DB
+        private string Database()
+        {
+            return _config.GetValue<string>("ConnectionString-neo4j:NEO4J_DATABASE") ?? "node4j";
+        }
+
+        public async Task<int> CreatePost(CrearPostNeo4jDto crearPDto)
+        {
+            await using var session = _driver.AsyncSession(WithDatabase);
+            return await session.ExecuteWriteAsync(async transaction =>
+            {
+                var cursor = await transaction.RunAsync(@"
+                    MATCH (u:User {userId: $userId}) 
+                    MERGE (pos:Post {postId: $postId, tenantId: $tenantId, postCreated:date($postCreated), isSanctioned: $isSanctioned})
+                    CREATE (u)-[r2:POSTED]->(pos)
+                    WITH pos
+                    UNWIND $hashtags AS hashtag
+                    MERGE (h:Hashtag {name: hashtag, tenantID: $tenantId})
+                    CREATE (pos)-[r1:WITH_HASHTAG{importance:40}]->(h)",
+                    new { crearPDto.userId, crearPDto.tenantId, crearPDto.postId, crearPDto.postCreated, crearPDto.isSanctioned, crearPDto.hashtags });
+
+                var summary = await cursor.ConsumeAsync();
+                return summary.Counters.NodesCreated + summary.Counters.RelationshipsCreated + summary.Counters.PropertiesSet + summary.Counters.LabelsAdded;
+            });
         }
     }
 }

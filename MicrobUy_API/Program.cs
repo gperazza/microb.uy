@@ -138,6 +138,8 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<TenantAplicationDbContext>;
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>;
     var mapper = scope.ServiceProvider.GetRequiredService<IMapper>;
+    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>;
+    var neo4jdriver = scope.ServiceProvider.GetRequiredService<IDriver>;
 
     SeedTematica.RunSeedTematica(context.Invoke());
     SeedCity.RunSeedCity(context.Invoke());
@@ -146,9 +148,11 @@ using (var scope = app.Services.CreateScope())
     Thread.Sleep(3000);
     SeedInstancia.RunSeedInstances(context.Invoke(), mapper.Invoke());
     Thread.Sleep(3000);
-    SeedUsers.RunSeedUsers(context.Invoke(), userManager.Invoke(), mapper.Invoke());
+    SeedUsers userSeed = new SeedUsers();
+    userSeed.RunSeedUsers(context.Invoke(), userManager.Invoke(), mapper.Invoke(), config.Invoke(), neo4jdriver.Invoke());
     Thread.Sleep(3000);
-    SeedPosts.RunSeedPostsAndFollowUser(context.Invoke(), mapper.Invoke());
+    SeedPosts postsSeed = new SeedPosts();
+    postsSeed.RunSeedPostsAndFollowUser(context.Invoke(), mapper.Invoke(), config.Invoke(), neo4jdriver.Invoke());
 }
 
 app.UseCors(misReglasCors);
